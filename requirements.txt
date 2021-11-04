@@ -1,6 +1,2 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
-# platform: linux-64
-pydub=0.25.1
-spotipy=2.19.0
-
