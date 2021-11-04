@@ -8,3 +8,5 @@ class TcpNetwork():
 
     def initSceneParser(self):
         parser = Parser(self.sceneFile) 
+
+    # TODO port the TCP code here
