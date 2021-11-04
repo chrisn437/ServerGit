@@ -1,9 +1,9 @@
 #!/usr/bin/bash
 
 # Example input variables
-from lib.SP.audioVisualEditor import AudioVisualEditor
-from lib.SP.questionnaireManager import QuestionnaireManager
-from lib.SP.spotifyWrapper import SpotifyWrapper
+from src.SP.audioVisualEditor import AudioVisualEditor
+from src.SP.questionnaireManager import QuestionnaireManager
+from src.SP.spotifyWrapper import SpotifyWrapper
 
 
 CLIENT_ID = "a451ba718e744322b8abb62344acb98c"
