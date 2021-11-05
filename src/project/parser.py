@@ -6,6 +6,7 @@ class Parser():
     """
     def __init__(self, sceneFile=None) -> None:
         print(f"Creating a parser object {sceneFile}")
+        d = Vector3(1, 2, 3)
 
     def parseScene(sceneFile):
         # 1. Read the XML files using an XML reading library, for example xml.elementtree(google precise name)

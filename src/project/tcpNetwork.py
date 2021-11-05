@@ -1,4 +1,4 @@
-from src.parser import Parser
+from src.project.parser import Parser
 
 class TcpNetwork():
     def __init__(self):
@@ -74,9 +74,6 @@ class Server():
                 # Process the data
                 amount_received = amount_received + data
                 self.saveFile(None)
-
-                if (self.saveFile == True):
-                    # Enable the parser OR call a function in the parser to convert the file to datastructures
 
                 if data:
                     print(f"Received {data}")

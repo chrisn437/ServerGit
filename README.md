@@ -6,7 +6,6 @@
 3. Install the requirements by issuing the command `conda install -c conda-forge --file requirements.txt`
 4. Run the main.py script through your virtual environment
 
-
 ## File and Folder Structure
 ```
 ├── main.py

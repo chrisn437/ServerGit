@@ -1,13 +1,12 @@
 #!/usr/bin/bash
 
 # Example input variables
-from src.oscNetwork import OscNetwork
-from src.parser import Parser
-from src.sceneProcessor import SceneProcessor
-from src.tcpNetwork import TcpNetwork
+from src.project.oscNetwork import OscNetwork
+from src.project.parser import Parser
+from src.project.sceneProcessor import SceneProcessor
+from src.project.tcpNetwork import TcpNetwork
 
 def main():
-    tcp = TcpNetwork()
     oscMngrMapper = OscNetwork()
 
 
