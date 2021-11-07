@@ -2,7 +2,6 @@ from src.project.parser import Parser
 
 import socket
 import threading
-import cv2
 import atexit
 import argparse
 
