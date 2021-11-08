@@ -17,28 +17,35 @@ class Parser():
 
         self.vrtx : list = []
         self.fc = []
-        self.mesh = None
+        self.meshpos = []
+        self.meshrot = []
         self.parseScene()
         pass
 
 
     def parseScene(self):
         for elm in self.root.findall(".//Vertex"):
-            atp = elm.attrib
-            self.vrtx.append(atp)
-            print(f"{atp}")
+            atb = elm.attrib.get("position")
+            self.vrtx.append(atb)
+            print(f"{atb}")
             #Vector = Vector3(3.2, 2.6, 9.1)
             #self.vrtx.append(Vector)
 
         for elm in self.root.findall(".//Face"):
-            fc = elm.attrib
-            print(f"{fc}")
+            atb = elm.attrib.get("vertices")
+            self.fc.append(atb)
+            print(f"{atb}")
 
         for elm in self.root.findall("./Mesh"):
             # 1. Extract pivot point and pivot orientation
             # 2. Create a mesh object and initialize it with the pivots, vertices, face
             # 3. Set the mesh object equal to the mesh member variable
             #self.mesh = Mesh(pivotPoint, pivotOrientat, self.vrtx, self.fc)
-            self.mesh = elm.attrib
-            print(f"{self.mesh}")
+            atbpos = elm.attrib.get("pos")
+            self.meshpos.append(atbpos)
+            print(f"{atbpos}")
+
+            atbrot = elm.attrib.get("rot")
+            self.meshrot.append(atbrot)
+            print(f"{atbrot}")
 
