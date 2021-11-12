@@ -6,6 +6,7 @@ import atexit
 import os
 import datetime
 
+
 import argparse
 savedscene = SAVED_SCENE
 
@@ -79,8 +80,10 @@ class Server():
                 if data:
                     print(f"Received {data}")
                     # TODO Initialize the parser here
+                    Parser(data)
                 else:
                     # TODO pass the file to the parser here
+                    Parser()
                     print(f"No more data")
                     break
 

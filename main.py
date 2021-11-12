@@ -10,8 +10,8 @@ from src.project.tcpNetwork import TcpNetwork
 from src.project.tcpNetwork import Server
 
 def main():
-    #oscNetwork = OscNetwork()
-    tcpNetwork = Server("127.0.0.1", 7000)
+    oscNetwork = OscNetwork()
+    #tcpNetwork = Server("127.0.0.1", 7000)
     #creatserver = Server()
 
 if __name__ == '__main__':

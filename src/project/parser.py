@@ -1,11 +1,11 @@
 import xml.etree.ElementTree as ET
 # TODO Add TriMesh library and save the scene as a trimesh object
-
+from src.Structs.Vector3 import Vector3
 import trimesh
 from src.project.sceneProcessor import SceneProcessor
 from src.Structs.Vector3 import Vector3
 from src.Structs.Marker import Marker
-from src.Structs.Environment import Environment
+
 
 
 class Parser():
@@ -22,6 +22,8 @@ class Parser():
         self.meshpos : list= []
         self.meshrot : list= []
         # TODO add marker container
+        arucoMarker = Marker(2, "shelf 2", (2, 6, 0), (1, 2, 3))
+
 
         self.scene : trimesh.Trimesh = None
         self.sceneProcessor = None
@@ -35,19 +37,20 @@ class Parser():
     def parseScene(self):
         for elm in self.root.findall(".//Vertex"):
             atb = elm.attrib.get("position")
-            vertex = atb.split()
+            vertex : list = atb.split()
             vertex = [float(i) for i in vertex]
             self.vrtx.append(Vector3(vertex[0], vertex[1], vertex[2]))
-            print(f"{vertex}")
-            x2 = atb[0]
 
-            #Vector = Vector3(3.2, 2.6, 9.1)
-            #self.vrtx.append(Vector)
+
+
+
 
         for elm in self.root.findall(".//Face"):
             atb = elm.attrib.get("vertices")
-            self.fc.append(atb)
-            print(f"{atb}")
+            face : list = atb.split()
+            face = [float(i) for i in face]
+            self.fc.append(Vector3(face[0], face[1], face[2]))
+
 
         for elm in self.root.findall("./Mesh"):
             # 1. Extract pivot point and pivot orientation
@@ -55,18 +58,31 @@ class Parser():
             # 3. Set the mesh object equal to the mesh member variable
             #self.mesh = Mesh(pivotPoint, pivotOrientat, self.vrtx, self.fc)
             atbpos = elm.attrib.get("pos")
-            self.meshpos.append(atbpos)
-            print(f"{atbpos}")
+            new_atbpos = str(atbpos)[1:-1]
+            atribute : list = new_atbpos.split(",")
+            atribute = [float(i) for i in atribute]
+            self.meshpos.append(Vector3(atribute[0], atribute[1], atribute[2]))
 
+        for elm in self.root.findall("./Mesh"):
             atbrot = elm.attrib.get("rot")
-            self.meshrot.append(atbrot)
-            print(f"{atbrot}")
+            new_atbrot = str(atbrot)[1:-1]
+            atribute : list = new_atbrot.split(",")
+            atribute = [float(i) for i in atribute]
+            self.meshrot.append(Vector3(atribute[0], atribute[1], atribute[2]))
 
-    def createTrimeshScene(self, vertices, faces):
-        # TODO Create a trimesh object
+    def createTrimeshScene(self, vectorvertex, vectorface):
+
         # TODO add markers to the scene.metadata collection
-        markerExample = Marker(1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0))
-        self.scene.metadata(markerExample.label, markerExample)
+        self.arucoMarker = 1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0)
+        #metadata = {}
+        #metadata : dict = self.scene.metadata(self.arucoMarker.ID, self.arucoMarker)
+
+        # TODO Create a trimesh object
+        Mesh = trimesh.Trimesh(vectorvertex, vectorface, face_normals=None, vertex_normals=None, face_colors=None,
+                               vertex_colors=None, face_attributes=None, vertex_attributes=None, metadata=None, process=True,
+                               validate=False, use_embree=True, initial_cache=None, visual=None,)
+
+
         pass
 
     def startSceneProcessor(self):
