@@ -1,18 +1,22 @@
 from src.project.parser import Parser
-
+from src.Structs.Constants import SAVED_SCENE
 import socket
 import threading
 import atexit
+import os
+import datetime
+
 import argparse
+savedscene = SAVED_SCENE
 
 class TcpNetwork():
     def __init__(self):
         print("Opening a TCP socket")
-        self.savedFile = "<MyScene />"
+        self.savedScene = savedscene
         self.initSceneParser()
 
     def initSceneParser(self):
-        parser = Parser(self.savedFile)
+        parser = Parser(savedscene)
 
 class Server():
     def __init__(self, ipAddress="192.168.1.214", port=8052):
@@ -36,12 +40,14 @@ class Server():
         self.TCPServerSocket.bind(self.serverAddress)
         print("TCP server up and listening on endpoint {0}:{1}".format(self.localIP, self.localPort))
 
+        self.listen()
+
         # Callback function executed when the program finishes
         atexit.register(self.cleanup)
 
     def cleanup(self):
         print("Cleaning up resources..")
-        cv2.destroyAllWindows()
+        #cv2.destroyAllWindows()
         self.TCPServerSocket.close()
 
     def listen(self):
@@ -62,19 +68,20 @@ class Server():
 
                 # Process the data
                 amount_received = amount_received + data
-                self.saveFile(None)
+                self.saveFile(bytes(b'1'), 'res\\')
 
                 if data:
                     print(f"Received {data}")
+                    # TODO Initialize the parser here
                 else:
                     print(f"No more data")
                     self.processImage(amount_received)
                     self.decodeData(amount_received)
                     break
 
-    def decodeData(self, databin):
-        gray = cv2.cvtColor(databin, cv2.COLOR_GRAY2BGR)
-        cv2.imshow('frame', gray)
+    #def decodeData(self, databin):
+        #gray = cv2.cvtColor(databin, cv2.COLOR_GRAY2BGR)
+        #cv2.imshow('frame', gray)
 
 
     def saveFile(self, databin, path):
@@ -86,19 +93,19 @@ class Server():
         
 
         """
-        databin = "hi whats up"
-        path = "res\\"
+
+        data = databin
+        fileName = "savedFile_" + datetime.datetime.now() + ".txt"
+        outputPath = os.path.join(os.getcwd(), fileName)
         # For inspiration..
         # 1. Decode the data bytes to a string
-        dec = databin.decode()
+        dec = data.decode()
 
         # 2. Create a blank text file at the given path
-        fh = open('{path}\\savedFile.txt', 'w')
-
         # 3. Dump the decoded data bytes to the file
-        with open('{path}\\savedFile.txt', 'a') as fh:
+        with open(outputPath, 'w+') as fh:
             fh.write(f"{dec}")
-        fh.close()
+            fh.close()
 
 
         return True
