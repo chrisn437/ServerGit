@@ -55,6 +55,12 @@ class Server():
         print("Listening for incoming traffic..")
         self.TCPServerSocket.listen(1)
 
+        #Create file and write stuff in it
+        path = "res\\"
+        time = str(datetime.datetime.now().strftime("%H%M%S"))
+        fileName = "savedFile_" + time + ".txt"
+        outputpath = os.path.join(os.getcwd(), path, fileName)
+
         while True:
             # Wait for a connection
             connection, client_address = self.TCPServerSocket.accept()
@@ -68,15 +74,14 @@ class Server():
 
                 # Process the data
                 amount_received = amount_received + data
-                self.saveFile(bytes(b'1'), 'res\\')
+                self.saveFile(data, outputpath)
 
                 if data:
                     print(f"Received {data}")
                     # TODO Initialize the parser here
                 else:
+                    # TODO pass the file to the parser here
                     print(f"No more data")
-                    self.processImage(amount_received)
-                    self.decodeData(amount_received)
                     break
 
     #def decodeData(self, databin):
@@ -84,7 +89,7 @@ class Server():
         #cv2.imshow('frame', gray)
 
 
-    def saveFile(self, databin, path):
+    def saveFile(self, data, outputpath):
         """Decodes the binary data as XML and saves it to the path
 
         Args:
@@ -94,17 +99,16 @@ class Server():
 
         """
 
-        data = databin
-        fileName = "savedFile_" + datetime.datetime.now() + ".txt"
-        outputPath = os.path.join(os.getcwd(), fileName)
         # For inspiration..
         # 1. Decode the data bytes to a string
         dec = data.decode()
 
         # 2. Create a blank text file at the given path
         # 3. Dump the decoded data bytes to the file
-        with open(outputPath, 'w+') as fh:
-            fh.write(f"{dec}")
+        fileexist : bool = os.path.exists(outputpath)
+        with open(outputpath, "a" if fileexist else "w",  newline='') as fh:
+            fh.write(dec)
+            fh.flush()
             fh.close()
 
 

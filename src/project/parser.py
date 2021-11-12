@@ -1,6 +1,8 @@
 import xml.etree.ElementTree as ET
+# TODO Add TriMesh library and save the scene as a trimesh object
 
-
+import trimesh
+from src.project.sceneProcessor import SceneProcessor
 from src.Structs.Vector3 import Vector3
 from src.Structs.Marker import Marker
 from src.Structs.Environment import Environment
@@ -19,7 +21,14 @@ class Parser():
         self.fc :list = []
         self.meshpos : list= []
         self.meshrot : list= []
+        # TODO add marker container
+
+        self.scene : trimesh.Trimesh = None
+        self.sceneProcessor = None
+
         self.parseScene()
+        self.createTrimeshScene(None, None)
+        self.startSceneProcessor()
 
 
 
@@ -52,6 +61,16 @@ class Parser():
             atbrot = elm.attrib.get("rot")
             self.meshrot.append(atbrot)
             print(f"{atbrot}")
+
+    def createTrimeshScene(self, vertices, faces):
+        # TODO Create a trimesh object
+        # TODO add markers to the scene.metadata collection
+        markerExample = Marker(1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0))
+        self.scene.metadata(markerExample.label, markerExample)
+        pass
+
+    def startSceneProcessor(self):
+        self.sceneProcessor = SceneProcessor()
 
 
 
