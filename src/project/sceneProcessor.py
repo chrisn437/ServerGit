@@ -1,3 +1,6 @@
+import osc4py3
+
+
 class SceneProcessor():
     """ Main brain behind quantizing the scene and calculating the navigation path
     """
