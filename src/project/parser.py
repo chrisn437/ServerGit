@@ -41,13 +41,14 @@ class Parser():
             atb = elm.attrib.get("position")
             vertex : list = atb.split()
             vertex = [float(i) for i in vertex]
-            self.vrtx.append(Vector3(vertex[0], vertex[1], vertex[2]))
+            self.vrtx.append([vertex[0], vertex[1], vertex[2]])
 
         for elm in self.root.findall(".//Face"):
             atb = elm.attrib.get("vertices")
             face : list = atb.split()
             face = [float(i) for i in face]
-            self.fc.append(Vector3(face[0], face[1], face[2]))
+            self.fc.append([face[0], face[1], face[2]])
+
 
         for elm in self.root.findall("./Mesh"):
             # 1. Extract pivot point and pivot orientation
@@ -75,9 +76,10 @@ class Parser():
         # metadata : dict = self.scene.metadata(self.arucoMarker.ID, self.arucoMarker)
 
     # TODO Create a trimesh object
-        self.scene = trimesh.Trimesh(vectorvertex, vectorfaces)
-        self.startSceneProcessor()
+        sceneGeo = trimesh.Trimesh(vectorvertex, vectorfaces)        
 
-    def startSceneProcessor(self):
+        self.startSceneProcessor(sceneGeo)
 
-        self.sceneProcessor = SceneProcessor(self.scene)
+    def startSceneProcessor(self, geometry):
+        self.sceneProcessor = SceneProcessor(geometry)
+        
