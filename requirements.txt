@@ -6,3 +6,4 @@ trimesh~=3.9.35
 python-osc~=1.8.0
 matplotlib~=3.4.3
 pyglet
+matplotlib

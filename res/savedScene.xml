@@ -3,7 +3,7 @@
 <!-- Scene exported at time: 18:02:32; 03.11.2021 -->
 <Root>
   <!--Meshes-->
-  <Vertex index="0" position="0.5 -0.5 0.5" />
+    <Vertex index="0" position="0.5 -0.5 0.5" />
     <Vertex index="1" position="-0.5 -0.5 0.5" />
     <Vertex index="2" position="0.5 0.5 0.5" />
     <Vertex index="3" position="-0.5 0.5 0.5" />
@@ -11,14 +11,6 @@
     <Vertex index="5" position="-0.5 0.5 -0.5" />
     <Vertex index="6" position="0.5 -0.5 -0.5" />
     <Vertex index="7" position="-0.5 -0.5 -0.5" />
-    <Vertex index="8" position="10.5 7.5 9.5" />
-    <Vertex index="9" position="9.5 7.5 9.5" />
-    <Vertex index="10" position="10.5 8.5 9.5" />
-    <Vertex index="11" position="9.5 8.5 9.5" />
-    <Vertex index="12" position="10.5 8.5 8.5" />
-    <Vertex index="13" position="9.5 8.5 8.5" />
-    <Vertex index="14" position="10.5 7.5 8.5" />
-    <Vertex index="15" position="9.5 7.5 8.5" />
     <Face index="0" vertices="0 2 3" />
     <Face index="1" vertices="0 3 1" />
     <Face index="2" vertices="2 4 5" />
@@ -31,16 +23,4 @@
     <Face index="9" vertices="1 5 7" />
     <Face index="10" vertices="6 4 2" />
     <Face index="11" vertices="6 2 0" />
-    <Face index="12" vertices="8 10 11" />
-    <Face index="13" vertices="8 11 9" />
-    <Face index="14" vertices="10 12 13" />
-    <Face index="15" vertices="10 13 11" />
-    <Face index="16" vertices="12 14 15" />
-    <Face index="17" vertices="12 15 13" />
-    <Face index="18" vertices="14 8 9" />
-    <Face index="19" vertices="14 9 15" />
-    <Face index="20" vertices="9 11 13" />
-    <Face index="21" vertices="9 13 15" />
-    <Face index="22" vertices="14 12 10" />
-    <Face index="23" vertices="14 10 8" />
 </Root>
