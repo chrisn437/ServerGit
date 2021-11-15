@@ -1,3 +1,3 @@
 class Mesh():
-    def __init__(self, pivotPoint, pivotRotation, vertices, faces):
+    def __init__(self,):
         pass

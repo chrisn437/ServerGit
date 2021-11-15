@@ -5,6 +5,7 @@ import trimesh
 from src.project.sceneProcessor import SceneProcessor
 from src.Structs.Vector3 import Vector3
 from src.Structs.Marker import Marker
+from src.Structs.Mesh import Mesh
 
 
 
@@ -27,6 +28,7 @@ class Parser():
 
         self.scene : trimesh.Trimesh = None
         self.sceneProcessor = None
+
 
         self.parseScene()
         self.createTrimeshScene(None, None)
@@ -61,7 +63,7 @@ class Parser():
             new_atbpos = str(atbpos)[1:-1]
             atribute : list = new_atbpos.split(",")
             atribute = [float(i) for i in atribute]
-            self.meshpos.append(Vector3(atribute[0], atribute[1], atribute[2]))
+            self.meshpos.append([atribute[0], atribute[1], atribute[2]])
 
         for elm in self.root.findall("./Mesh"):
             atbrot = elm.attrib.get("rot")
@@ -69,25 +71,19 @@ class Parser():
             atribute : list = new_atbrot.split(",")
             atribute = [float(i) for i in atribute]
             self.meshrot.append(Vector3(atribute[0], atribute[1], atribute[2]))
+        self.createTrimeshScene(self.vrtx, self.fc)
 
-    def createTrimeshScene(self, vectorvertex, vectorface):
-
+    def createTrimeshScene(self, vectorvertex, vectorfaces):
         # TODO add markers to the scene.metadata collection
         self.arucoMarker = 1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0)
-        #metadata = {}
-        #metadata : dict = self.scene.metadata(self.arucoMarker.ID, self.arucoMarker)
+        #  metadata = {}
+        # metadata : dict = self.scene.metadata(self.arucoMarker.ID, self.arucoMarker)
 
-        # TODO Create a trimesh object
-        Mesh = trimesh.Trimesh(vectorvertex, vectorface, face_normals=None, vertex_normals=None, face_colors=None,
-                               vertex_colors=None, face_attributes=None, vertex_attributes=None, metadata=None, process=True,
-                               validate=False, use_embree=True, initial_cache=None, visual=None,)
+    # TODO Create a trimesh object
 
-
-        pass
+        self.scene = trimesh.Trimesh(vectorvertex, vectorfaces)
+        self.startSceneProcessor()
 
     def startSceneProcessor(self):
-        self.sceneProcessor = SceneProcessor()
 
-
-
-
+        self.sceneProcessor = SceneProcessor(self.scene)
