@@ -2,3 +2,4 @@
 # $ conda create --name <env> --file <this file>
 numpy
 trimesh
+pyglet
