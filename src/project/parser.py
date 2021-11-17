@@ -22,6 +22,7 @@ class Parser():
         self.fc :list = []
         self.meshpos : list= []
         self.meshrot : list= []
+        self.__trimeshGeo : trimesh.Trimesh = None
         # TODO add marker container
         arucoMarker = Marker(2, "shelf 2", (2, 6, 0), (1, 2, 3))
 
@@ -34,7 +35,9 @@ class Parser():
         self.createTrimeshScene(None, None)
         self.startSceneProcessor()
 
-
+    @property
+    def getTrimeshGeo(self):
+        return self.__trimeshGeo
 
     def parseScene(self):
         for elm in self.root.findall(".//Vertex"):
@@ -69,16 +72,18 @@ class Parser():
             self.meshrot.append(Vector3(atribute[0], atribute[1], atribute[2]))
         self.createTrimeshScene(self.vrtx, self.fc)
 
+    
+
     def createTrimeshScene(self, vectorvertex, vectorfaces):
         # TODO add markers to the scene.metadata collection
         self.arucoMarker = 1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0)
         #  metadata = {}
         # metadata : dict = self.scene.metadata(self.arucoMarker.ID, self.arucoMarker)
 
-    # TODO Create a trimesh object
-        sceneGeo = trimesh.Trimesh(vectorvertex, vectorfaces)        
-
-        self.startSceneProcessor(sceneGeo)
+        # TODO Create a trimesh object
+        if(self.getTrimeshGeo() is None):
+            self.__trimeshGeo = trimesh.Trimesh(vectorvertex, vectorfaces)        
+        #self.startSceneProcessor(sceneGeo)
 
     def startSceneProcessor(self, geometry):
         self.sceneProcessor = SceneProcessor(geometry)
