@@ -1,5 +1,8 @@
 import argparse
 import math
+import numpy as np
+
+from src.Structs.Vector3 import Vector3
 
 from pythonosc import dispatcher
 from pythonosc import osc_server
@@ -15,23 +18,37 @@ class OscNetwork():
     """ OSC Message receiver and sender
     """
 
+
     def __init__(self):
-        self.sceneParser = Parser(SAVED_SCENE)
+        #self.sceneParser = Parser(SAVED_SCENE)
         print("Initializing OSC interface")
 
-        ip = "127.0.0.1"
-        sendPort = 7000
-        inPort = 8000
+        self.ip = "127.0.0.1"
+        self.sendPort = 7000
+        self.inPort = 8000
+        self.stop_listening = None
 
-        #Sending osc message
-        client = udp_client.SimpleUDPClient(ip, sendPort)
+        #setting oscNetwork up
+        self.client = udp_client.SimpleUDPClient(self.ip, self.sendPort)
 
         #catch OSC message
-        dispater = dispatcher.Dispatcher()
-        dispater.map()
+        self.dispatcher = dispatcher.Dispatcher()
+        self.dispatcher.map("/start listeneng", handler= None)
+        self.start_listening()
 
         #Serer for listening
-        server = osc_server.ThreadingOSCUDPServer((ip, inPort),dispatcher)
+        server = osc_server.ThreadingOSCUDPServer((self.ip, self.inPort),self.dispatcher)
         print("Servering on {}".format(server.server_address))
         server.serve_forever()
+
+    def start_listening(self):
+        global stop_listening
+        string2 = "hallo wie gehts"
+        encoded_string = string2.encode()
+        byte_array = bytearray(encoded_string)
+        print("started listening")
+        self.client.send_message("/position update", byte_array)
+        self.stop_listening = None
+        pass
+
 

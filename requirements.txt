@@ -1,4 +1,7 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
-numpy
-trimesh
+# $ conda install python-osc
+numpy~=1.21.4
+trimesh~=3.9.35
+python-osc~=1.8.0
+matplotlib~=3.4.3
