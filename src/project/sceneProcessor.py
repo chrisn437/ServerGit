@@ -2,6 +2,8 @@ import trimesh.viewer
 import trimesh.scene
 import trimesh
 import trimesh.voxel
+from trimesh.voxel.encoding import BinaryRunLengthEncoding, Encoding
+import trimesh.voxel.morphology as morphology
 from trimesh.voxel.base import VoxelGrid
 import trimesh.voxel.creation
 import trimesh.primitives
@@ -12,7 +14,7 @@ from mpl_toolkits.mplot3d import Axes3D, art3d
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
+import networkx as nx
 
 def show(mesh1, mesh2=None, colors=(1, 0.7, 0.4, 0.3)):
     scene = trimesh.scene.Scene()
@@ -32,11 +34,26 @@ class SceneProcessor():
             fp = os.path.join(os.getcwd(), "permRes", "Room2.obj")
             self.tmg = trimesh.load(fp)
 
-        self.voxelSize  : float= 0.1
-        self.voxelGrid2 : VoxelGrid = trimesh.voxel.creation.local_voxelize(self.tmg, [0, 0, 0], self.voxelSize, 10)
-        self.voxelGrid  : VoxelGrid = trimesh.voxel.creation.voxelize(self.tmg, self.voxelSize)
+        self.voxelSize  : float= 0.2
+    
+        # Create a voxel grid
+        self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.tmg, self.voxelSize)
 
-        show(self.voxelGrid.as_boxes(colors=[0.7, 0.5, 0.4, 0.4]), self.tmg)
+        # Clone and fill the voxel grid with more voxels
+        self.filled : VoxelGrid = self.voxelGrid.copy().fill()
+        show(self.filled.as_boxes(colors=(0.7, 0.4, 0.3, 0.3))) # visualize
+
+        # Create a listener position in X-Y-Z
+        arr : np.ndarray = np.array([0.06, 0.07, 0.04])
+
+        # Retrieve a 3D coordinate (row, height, column) in which voxel the listener is located
+        indices : np.ndarray = self.filled.points_to_indices(arr)
+
+        # Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
+        index = np.where(np.all(self.filled.sparse_indices == indices, axis=1))
+        listenerVoxel = self.filled.points[index[0]]
+
+
         pass
         # 1. TODO discretize the mesh
         # visualize the trimesh data

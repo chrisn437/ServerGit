@@ -33,7 +33,6 @@ class Parser():
 
         self.parseScene()
         self.createTrimeshScene(None, None)
-        self.startSceneProcessor()
 
     @property
     def getTrimeshGeo(self):
@@ -81,7 +80,7 @@ class Parser():
         # metadata : dict = self.scene.metadata(self.arucoMarker.ID, self.arucoMarker)
 
         # TODO Create a trimesh object
-        if(self.getTrimeshGeo() is None):
+        if(self.__trimeshGeo is None):
             self.__trimeshGeo = trimesh.Trimesh(vectorvertex, vectorfaces)        
         #self.startSceneProcessor(sceneGeo)
 
