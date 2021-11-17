@@ -2,18 +2,23 @@ import trimesh.viewer
 import trimesh.scene
 import trimesh
 import trimesh.voxel
+from trimesh.voxel.base import VoxelGrid
 import trimesh.voxel.creation
 import trimesh.primitives
 from trimesh.exchange.binvox import voxelize_mesh
 from src.Structs.Mesh import Mesh
+
+from mpl_toolkits.mplot3d import Axes3D, art3d
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D, art3d
+import os
 
 
-def show(chair_mesh, chair_voxels, colors=(1, 1, 1, 0.3)):
-    scene = chair_mesh.scene()
-    scene.add_geometry(chair_voxels.as_boxes(colors=colors))
+def show(mesh1, mesh2=None, colors=(1, 0.7, 0.4, 0.3)):
+    scene = trimesh.scene.Scene()
+    scene.add_geometry(mesh1)
+    if mesh2 != None:
+        scene.add_geometry(mesh2)
     scene.show()
 
 
@@ -21,50 +26,33 @@ class SceneProcessor():
     """ Main brain behind quantizing the scene and calculating the navigation path
     """
 
-    def __init__(self, trimeshgeometry):
-        self.trimeshgeometry = trimeshgeometry
-        self.voxelSize = 0.34
-        self.voxelGrid : trimesh.voxel.VoxelGrid = trimesh.voxel.creation.voxelize(self.trimeshgeometry, self.voxelSize)
-        isFilled =self.voxelGrid.is_filled([0, 0, 0])
-        geo = self.voxelGrid.as_boxes(colors=(0.7, 0.5, 0.1, 0.25))
+    def __init__(self, trimeshgeometr:trimesh.Trimesh =None):
+        self.tmg : trimesh.Trimesh = trimeshgeometr
+        if self.tmg is None:
+            fp = os.path.join(os.getcwd(), "permRes", "Room2.obj")
+            self.tmg = trimesh.load(fp)
 
+        self.voxelSize  : float= 0.1
+        self.voxelGrid2 : VoxelGrid = trimesh.voxel.creation.local_voxelize(self.tmg, [0, 0, 0], self.voxelSize, 10)
+        self.voxelGrid  : VoxelGrid = trimesh.voxel.creation.voxelize(self.tmg, self.voxelSize)
 
-
-        points = self.voxelGrid.points
-        for p in points:
-            b = trimesh.primitives.Box
-            b.apply_scale(self.voxelSize)
-            o = self.voxelGrid.indices_to_points(p)
-            print(o)
-
-
-
-
-
-        print("Scene processor initialized")
-        print(self.voxelGrid.filled_count)
-        newScene = trimesh.scene.Scene()
-        newScene.add_geometry(geo)
-        newScene.add_geometry(self.trimeshgeometry)
-        
-        self.extractTriangles(geo)
-
-        newScene.show()
-
+        show(self.voxelGrid.as_boxes(colors=[0.7, 0.5, 0.4, 0.4]), self.tmg)
         pass
         # 1. TODO discretize the mesh
         # visualize the trimesh data
-
 
         # 2. TODO open an OSC connection and listeng for incoming messages
         # 3. TODO Calculated the shortest path using the discretized mesh and continuous position updates from the client
         # 4. TODO output the direction of navigation
         # P.s. step 3 and 4 are continuously looping
 
+
     def extractTriangles(self, input : trimesh.Trimesh):
         counter = 0
         cubes : list[trimesh.Trimesh] = []
-        vertices : np.ndarray = []
+        vertices : np.ndarray = np.asanyarray([0.5])
+        print(isinstance(vertices, np.ndarray))
+     
         faces = []
         faceIndex = 0
         faceCounter = 0
