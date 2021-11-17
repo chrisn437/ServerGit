@@ -8,10 +8,12 @@ from src.project.parser import Parser
 from src.project.sceneProcessor import SceneProcessor
 from src.project.tcpNetwork import TcpNetwork
 from src.project.tcpNetwork import Server
-from src.Structs.Constants import COMPLEX_SCENE
+import src.Structs.Constants as const
 
 def main():
-    sceneProcessor = SceneProcessor()
+    s = Parser(const.SAVED_SCENE)
+    geo = s.getTrimeshGeo
+    sceneProcessor = SceneProcessor(geo)
     #oscNetwork = OscNetwork()
     #tcpNetwork = Server("127.0.0.1", 7000)
     #creatserver = Server()
