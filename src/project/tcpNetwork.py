@@ -20,7 +20,7 @@ class TcpNetwork():
         parser = Parser(savedscene)
 
 class Server():
-    def __init__(self, ipAddress="192.168.1.214", port=8052):
+    def __init__(self, ipAddress="192.168.1.214", port=8050):
         """ Single threaded server application
 
         Args:
@@ -120,7 +120,7 @@ class Server():
 def main():
   # Prep args
   parser = argparse.ArgumentParser(description='Process some integers.')
-  parser.add_argument('-l', action='store_true', help='Initialize the server on localhost and default port (8050)')
+  parser.add_argument('-l', action='store_true', help='Initialize the server on localhost and default port (8052)')
   parser.add_argument('-i', type=str, help='IP Address for the server (you cannot bind to an IP address that your PC doesnt have! Use if/ipconfig as help)')
   parser.add_argument('-p', type=int, help='TCP port')
   args = parser.parse_args()
@@ -132,7 +132,7 @@ def main():
 
   # Handle args
   if(args.l):
-    argIp = "127.0.0.1"
+    argIp = "192.168.1.214"
 
   if(argIp and argPort is not None):
       serv = Server(argIp, argPort)

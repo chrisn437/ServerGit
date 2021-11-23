@@ -23,7 +23,7 @@ class OscNetwork():
         #self.sceneParser = Parser(SAVED_SCENE)
         print("Initializing OSC interface")
 
-        self.ip = "127.0.0.1"
+        self.ip = "192.168.1.214"
         self.sendPort = 7000
         self.inPort = 8000
         self.stop_listening = None
@@ -50,5 +50,3 @@ class OscNetwork():
         self.client.send_message("/position update", byte_array)
         self.stop_listening = None
         pass
-
-
