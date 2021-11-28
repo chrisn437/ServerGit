@@ -6,15 +6,29 @@ import trimesh
 
 @dataclass
 class VoxelPoint():
+    """[summary]
+    """
     voxelGrid : VoxelGrid = None
+    """ Voxel grid from which this VoxelPoint is derived from
+    """
     voxelSize : float = None
+    """ Size of this voxel
+    """
     transform : TrackedArray = None
+    """[summary]
+    """
     location : np.ndarray = None
+    """ X-Y-Z position of this voxel point
+    """
     Index1D : int = None
+    """ Index of this point from the 1D array of voxelGrid.points
+    """
     Indices3D : tuple = None
+    """NP array containing neighbours in a 3D indice format 
+    """
     Neighbours : np.ndarray = None
 
     def visualize(self):
         origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
-        
+
         trimesh.primitives.Box()
