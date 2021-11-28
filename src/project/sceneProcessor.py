@@ -65,7 +65,7 @@ class SceneProcessor():
         # 4. TODO output the direction of navigation
         # P.s. step 3 and 4 are continuously looping
 
-    def getNeighbours(self, voxelGrid):
+    def getNeighbours(self, voxelGrid : VoxelGrid):
         voxelSize = self.voxelGrid.shape
         output : list[vp.VoxelPoint] = []
 
@@ -110,7 +110,7 @@ class SceneProcessor():
             neighbours.append((h, w, d + 1))
         
         output = vp.VoxelPoint()
-        output.grid = voxelGrid
+        output.voxelGrid = voxelGrid
         output.voxelSize = voxelSize
         output.transform = voxelGrid.transform
         output.location = voxelGrid.indices_to_points(voxelIndex)
