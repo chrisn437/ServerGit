@@ -43,8 +43,6 @@ class SceneProcessor():
         # Floor fill the grid
         self.voxelGridFilled = self.voxelGrid.fill()
 
-        pointsWithNeighbours = self.getNeighbours(self.voxelGridFilled)
-
         # Create a listener position in X-Y-Z
         arr : np.ndarray = np.array([0.06, 0.07, 0.04])
 
@@ -54,6 +52,8 @@ class SceneProcessor():
         # Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
         index = np.where(np.all(self.voxelGridFilled.sparse_indices == indices, axis=1))
         listenerVoxel = self.voxelGridFilled.points[index[0]]
+
+        self.pointsWithNeighbours = self.getNeighbours(self.voxelGridFilled)
 
 
         pass
