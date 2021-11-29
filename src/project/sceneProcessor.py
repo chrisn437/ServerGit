@@ -9,13 +9,16 @@ import trimesh.voxel.creation
 import trimesh.primitives
 from trimesh.exchange.binvox import voxelize_mesh
 from src.Structs.Mesh import Mesh
+
 from src.project.pathfinder import Pathfinder
+
 
 from mpl_toolkits.mplot3d import Axes3D, art3d
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-#import networkx as nx
+
+import src.Structs.VoxelPoint as vp
 
 def show(mesh1, mesh2=None, colors=(1, 0.7, 0.4, 0.3)):
     scene = trimesh.scene.Scene()
@@ -35,73 +38,27 @@ class SceneProcessor():
             fp = os.path.join(os.getcwd(), "permRes", "Room2.obj")
             self.tmg = trimesh.load(fp)
 
-        self.voxelSize  : float= 0.2
-    
-        # Create a voxel grid
-        self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.tmg, self.voxelSize)
 
-        # Clone and fill the voxel grid with more voxels
-        self.filled : VoxelGrid = self.voxelGrid.copy().fill()
-        #show(self.filled.as_boxes(colors=(0.1, 0.7, 0.5, 0.1))) # visualize
+        self.voxelSize  : float= 0.34
+        # Get the bounding box of the geometry and generate a voxel grid out of it
+        self.bb = self.tmg.bounding_box_oriented
+        self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)
+        
+        # Floor fill the grid
+        self.voxelGridFilled = self.voxelGrid.fill()
 
         # Create a listener position in X-Y-Z
         arr : np.ndarray = np.array([0.06, 0.07, 0.04])
 
         # Retrieve a 3D coordinate (row, height, column) in which voxel the listener is located
-        indices : np.ndarray = self.filled.points_to_indices(arr)
 
-        point = (4, 4, 4)
-
-        pos = (0, 0, 0)
-        cx = 0
-        cy = 0
-        cz = 0
-
-        for i in range(point[0]):
-            cx +=1
-            entry = self.filled.indices_to_points(o)
-
-            cy += 1
-            entry = self.filled.indices_to_points(o)
-
-            cz += 1
-            entry = self.filled.indices_to_points(o)
-
-
-
-            for y in range(point[1]):
-                cy += 1
-                cz == 1
-                for z in range(point[2]):
-                    cz += 1
-
-                    o = [cx, cy, cz]
-                    print(o)
-                    entry = self.filled.indices_to_points(o)
-                    break
-                break
-
-        n2 = np.array([4, 3, 4])
-        n3 = np.array([4, 4, 3])
-        n1 = np.array([3, 4, 4])
-
-        # 1. Derive the size of the grid
-        size = (4, 4, 4)
-        # 2. Take the first point (0, 0, 0)
-        numberOfIteration = size[0] * size[1] * size[2]
-
-
-
-
-
-
-        output = self.filled.indices_to_points(n1)
+        indices : np.ndarray = self.voxelGridFilled.points_to_indices(arr)
 
         # Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
-        index = np.where(np.all(self.filled.sparse_indices == indices, axis=1))
-        listenerVoxel = self.filled.points[index[0]]
-        dopath = Pathfinder.neighbors(self.voxelGrid.points)
+        index = np.where(np.all(self.voxelGridFilled.sparse_indices == indices, axis=1))
+        listenerVoxel = self.voxelGridFilled.points[index[0]]
 
+        self.pointsWithNeighbours = self.getNeighbours(self.voxelGridFilled)
 
         pass
         # 1. TODO discretize the mesh
@@ -112,6 +69,100 @@ class SceneProcessor():
         # 4. TODO output the direction of navigation
         # P.s. step 3 and 4 are continuously looping
 
+
+    def getNeighbours(self, voxelGrid : VoxelGrid):
+        voxelSize = self.voxelGrid.shape
+        output : list[vp.VoxelPoint] = []
+
+        for h in range(voxelSize[0]):
+            for w in range(voxelSize[1]):
+                for d in range(voxelSize[2]):
+                    print(f"Looking for indices {h}; {w}; {d}")
+                    entry = self.getNeighbour(self.voxelGrid, np.array([h, w, d]), self.voxelSize)
+                    output.append(entry)
+        self.testVoxelPoints(self.voxelGrid, output)
+        return output
+
+
+    def getNeighbour(self, voxelGrid : VoxelGrid, voxelIndex : np.ndarray, voxelSize : float):
+        """Returns all neighbours for a given voxel indice in (X, Y, Z) format
+
+
+        Args:
+            voxelIndex ([type]): [description]
+        """
+
+        h = voxelIndex[0]
+        w = voxelIndex[1]
+        d = voxelIndex[2]
+        gridSize = voxelGrid.shape
+
+        neighbours = []
+        # Brute-force for all neighbours, subtract -1 from gridsize to get 0-indexed gridSized
+        if h > 0:
+            neighbours.append((h - 1, w, d)) 
+        if h < gridSize[0] - 1:
+            neighbours.append((h + 1, w, d))
+        
+        if w > 0:
+            neighbours.append((h, w - 1, d))
+        if w < gridSize[1] - 1:
+            neighbours.append((h, w + 1, d))
+
+        if d > 0:
+            neighbours.append((h, w, d - 1))
+        if d < gridSize[2] - 1:
+            neighbours.append((h, w, d + 1))
+        
+        output = vp.VoxelPoint()
+        output.voxelGrid = voxelGrid
+        output.voxelSize = voxelSize
+        output.transform = voxelGrid.transform
+        output.location = voxelGrid.indices_to_points(voxelIndex)
+        output.Index1D = self.getVoxel3dTo1dIndex(voxelGrid, voxelIndex)
+        output.Indices3D = voxelIndex
+        output.Neighbours = np.array(neighbours)
+        return output
+
+    def testVoxelPoints(self, voxelGrid : VoxelGrid, voxelPoints : list[vp.VoxelPoint]):
+        """ Ensure that voxelPoints have correctly assigned 3D and 1D indices for the corresponding location.
+
+        Args:
+            voxelGrid (VoxelGrid): Grid from which list of VoxelPoints were generated from
+            voxelPoints (np.ndarray[vp.VoxelPoint]): Voxel points object generated from the voxelGrid
+
+        Raises:
+            Exception: VoxelPoint's location derived from 1D index does not match up voxelGrid
+            Exception: VoxelPoint's location derived from 3D index does not match up voxelGrid
+        """
+        for voxPoint in voxelPoints:
+            index = voxPoint.Index1D
+            gridPoint = voxelGrid.points[index]
+            # Test if location derived from 1D index matches the voxelGrid's 1D index location..
+            if(not np.allclose(gridPoint, voxPoint.location)):
+                raise Exception(f"Voxel point index {index}; value {voxPoint.location} not equal to voxelGrid. Voxelgrid value {gridPoint}")
+
+            # Test if location derived from 3D index matches the voxelGrid's 3D index location..
+            points = voxelGrid.indices_to_points(voxPoint.Indices3D)
+            if(not np.allclose(points, voxPoint.location)):
+                raise Exception(f"Voxel point index {index}; value {voxPoint.location} not equal to voxelGrid. Voxelgrid value {gridPoint}")
+        print("Voxel Point test passed")
+
+            
+
+
+    def getVoxel3dTo1dIndex(self, voxelGrid : VoxelGrid, indices : np.ndarray):   
+        """ Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
+        Args:
+            voxelGrid (VoxelGrid): Voxel grid
+            indices (tuple): X-Y-Z indices that we wish to get the 1D array index
+        """
+        # Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
+        try:
+            index = np.where(np.all(voxelGrid.sparse_indices == indices, axis=1))[0][0]
+            return index
+        except ValueError:
+            pass
 
     def extractTriangles(self, input : trimesh.Trimesh):
         counter = 0
