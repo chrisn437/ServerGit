@@ -59,7 +59,7 @@ class SceneProcessor():
         listenerVoxel = self.voxelGridFilled.points[index[0]]
 
         self.pointsWithNeighbours = self.getNeighbours(self.voxelGridFilled)
-
+        self.dopathfinding = Pathfinder.neighbors(self.pointsWithNeighbours)
         pass
         # 1. TODO discretize the mesh
         # visualize the trimesh data
