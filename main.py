@@ -17,7 +17,7 @@ def main():
     #sceneProcessor = SceneProcessor()
     s = Parser(const.SAVED_SCENE)
     geo = s.getTrimeshGeo
-    sceneProcessor = SceneProcessor(geo)
+    sceneProcessor = SceneProcessor()
     #oscNetwork = OscNetwork()
     #tcpNetwork = Server("127.0.0.1", 7000)
     #creatserver = Server()
