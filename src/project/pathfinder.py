@@ -1,21 +1,145 @@
 import numpy as np
-import src.project.sceneProcessor as sp
+import pandas as pd
+from collections import OrderedDict
+import heapq
+import matplotlib as mpl
+import src.Structs.VoxelPoint as vp
+
+from mpl_toolkits.mplot3d import Axes3D
+
+import matplotlib.pyplot as plt
+
+
+
+
+
 
 
 class Pathfinder():
 
+    def __init__(self, gridlayout):
+        self.x1 = []
+        self.y1 = []
+        self.z1 = []
+
+        self.x2 = []
+        self.y2 = []
+        self.z2 = []
+
+        self.coord_pairs = []
+
+        self.start = (0, 0, 0)
+        self.goal = (2, 2, 2)
+
+        self.neighbors(gridlayout)
 
 
-    def neighbors(gridLayout):
-        x1 : list = []
-        y1 : list = []
-        z1 : list = []
-        myIndices = gridLayout
+        self.route = self.astar(self.start, self.goal)
 
-        for i in range(27):
-            length = len(myIndices[i].__getattribute__('Neighbours'))
+        self.route = self.route + [self.start]
+
+        self.route = self.route[::-1]
+
+        print(self.route)
+
+        self.x_coords: list = []
+
+        self.y_coords: list = []
+
+        self.z_coords: list = []
+
+        for i in (range(0, len(self.route))):
+            x = self.route[i][0]
+
+            y = self.route[i][1]
+
+            z = self.route[i][2]
+
+            self.x_coords.append(x)
+
+            self.y_coords.append(y)
+
+            self.z_coords.append(z)
+
+        self.x_coords = np.array(self.x_coords)
+
+        self.y_coords = np.array(self.y_coords)
+
+        self.z_coords = np.array(self.z_coords)
+
+        fig = plt.figure(figsize=(12, 12))
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.scatter3D(1, 1, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 2, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 3, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 1, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 2, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 3, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 1, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 2, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 3, 1, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 1, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 2, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 3, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 1, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 2, 2, marker="x", color="black", s=100)
+
+        ax.scatter3D(2, 3, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 1, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 2, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 3, 2, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 1, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 2, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(1, 3, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 1, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 2, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(2, 3, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 1, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 2, 3, marker="o", color="black", s=100)
+
+        ax.scatter3D(3, 3, 3, marker="o", color="black", s=100)
+        ax.scatter3D(self.goal[0], self.goal[1], self.goal[2], marker="*", color="red", s=100)
+        ax.plot3D(self.x_coords, self.y_coords, self.z_coords, color="pink")
+
+
+        plt.show()
+
+
+    def neighbors(self, gridLayout):
+        x1: list = []
+        y1: list = []
+        z1: list = []
+        myIndices : list[vp.VoxelPoint] = gridLayout
+
+        for i in myIndices:
+            length = len(i.Neighbours)
             while length > 0:
-                first = myIndices[i].__getattribute__('Indices3D')
+                first = i.Indices3D
                 x1.append(first[0])
                 y1.append(first[1])
                 z1.append(first[2])
@@ -24,19 +148,104 @@ class Pathfinder():
         print(y1)
         print(z1)
 
+        x2 : list = []
+        y2 : list = []
+        z2 : list = []
 
-    def available_neighbours(current_x, current_y, current_z):
-        pass
 
-    def heurisitc(a, b):
-        pass
+        for i in myIndices:
+            neighbours = i.Neighbours
+            for y in range(len(neighbours)):
+                newneighbour = neighbours[y]
+                x2.append(newneighbour[0])
+                y2.append(newneighbour[1])
+                z2.append(newneighbour[2])
 
-    def astar(start, goal):
-        pass
+        print(x2)
+        print(y2)
+        print(z2)
 
-    def calc_route(self):
-        pass
+        self.coord_pairs = pd.DataFrame(OrderedDict((('x1', pd.Series(x1)), ('y1', pd.Series(y1)), ('z1', pd.Series(z1)),
+                                                ('x2', pd.Series(x2)), ('y2', pd.Series(y2)), ('z2', pd.Series(z2)))))
 
-    def get_x_and_y(self):
-        pass
+        self.coord_pairs = self.coord_pairs.sort_values(['x1', 'y1', 'z1'], ascending=[True, True, True])
+
+        print(self.coord_pairs)
+
+        self.start = (0, 0, 0)
+
+        self.goal = (2, 2, 2)
+
+
+
+    def available_neighbours(self, current_x, current_y, current_z):
+        return list(zip(self.coord_pairs.loc[(self.coord_pairs.x1 == current_x) & (self.coord_pairs.y1 == current_y) & (
+                        self.coord_pairs.z1 == current_z)][["x2"]].x2,
+                        self.coord_pairs.loc[(self.coord_pairs.x1 == current_x) & (self.coord_pairs.y1 == current_y) & (
+                                    self.coord_pairs.z1 == current_z)][["y2"]].y2,
+                        self.coord_pairs.loc[(self.coord_pairs.x1 == current_x) & (self.coord_pairs.y1 == current_y) & (
+                                    self.coord_pairs.z1 == current_z)][["z2"]].z2))
+
+    def heuristic(self, a, b):
+        return np.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2 + (b[2] - a[2]) ** 2)
+
+    def astar(self, start, goal):
+        close_set = set()
+
+        came_from = {}
+
+        gscore = {start: 0}
+
+        fscore = {start: self.heuristic(start, goal)}
+
+        oheap = []
+
+        heapq.heappush(oheap, (fscore[start], start))
+
+        iter: int = 0
+
+        while oheap:
+
+            iter += 1
+
+            print(iter)
+
+            current = heapq.heappop(oheap)[1]
+
+            neighbours = self.available_neighbours(current[0], current[1], current[2])
+
+            if current == goal:
+
+                data = []
+
+                while current in came_from:
+                    data.append(current)
+
+                    current = came_from[current]
+
+                return data
+
+            close_set.add(current)
+
+            for x, y, z in neighbours:
+
+                neighbour = x, y, z
+
+                tentative_g_score = gscore[current] + self.heuristic(current, neighbour)
+
+                if neighbour in close_set and tentative_g_score >= gscore.get(neighbour, 0):
+                    continue
+
+                if tentative_g_score < gscore.get(neighbour, 0) or neighbour not in [i[1] for i in oheap]:
+                    came_from[neighbour] = current
+
+                    gscore[neighbour] = tentative_g_score
+
+                    fscore[neighbour] = tentative_g_score + self.heuristic(neighbour, goal)
+
+                    heapq.heappush(oheap, (fscore[neighbour], neighbour))
+
+        return False
+
+
 
