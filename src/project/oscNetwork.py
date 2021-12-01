@@ -1,7 +1,28 @@
+<<<<<<< HEAD
 #from pythonosc import dispatcher
 #from pythonosc import osc_server
 #from pythonosc import udp_client
 
+=======
+import argparse
+import math
+import numpy as np
+
+from src.Structs.Vector3 import Vector3
+
+from pythonosc import dispatcher
+from pythonosc import osc_server
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
+
+
+from src.Structs.Constants import SAVED_SCENE
+from src.project.parser import Parser
+
+
+from src.project.parser import Parser
+from src.Structs.Constants import SAVED_SCENE, COMPLEX_SCENE
+>>>>>>> environmentQuantization
 
 class OscNetwork():
     """ OSC Message receiver and sender

@@ -11,8 +11,6 @@ from trimesh.exchange.binvox import voxelize_mesh
 from src.Structs.Mesh import Mesh
 
 from src.project.pathfinder import Pathfinder
-
-
 from mpl_toolkits.mplot3d import Axes3D, art3d
 import numpy as np
 import matplotlib.pyplot as plt
@@ -27,7 +25,6 @@ def show(mesh1, mesh2=None, colors=(1, 0.7, 0.4, 0.3)):
         scene.add_geometry(mesh2)
     scene.show()
 
-
 class SceneProcessor():
     """ Main brain behind quantizing the scene and calculating the navigation path
     """
@@ -40,29 +37,28 @@ class SceneProcessor():
 
 
         self.voxelSize  : float= 0.34
-        # Get the bounding box of the geometry and generate a voxel grid out of it
-        self.bb = self.tmg.bounding_box_oriented
+        # Get the bounding box of the geometry and generate a filled voxel grid out of it
+        self.bb = self.tmg.bounding_box
         self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)
-        
-        # Floor fill the grid
-        self.voxelGridFilled = self.voxelGrid.fill()
+        self.voxelGrid = self.voxelGrid.fill()
+
 
         # Create a listener position in X-Y-Z
-        arr : np.ndarray = np.array([0.06, 0.07, 0.04])
+        arr : np.ndarray = np.array([-3.124, -1.124, -2.54])
 
         # Retrieve a 3D coordinate (row, height, column) in which voxel the listener is located
 
-        indices : np.ndarray = self.voxelGridFilled.points_to_indices(arr)
+        indices : np.ndarray = self.voxelGrid.points_to_indices(arr)
+
 
         # Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
-        index = np.where(np.all(self.voxelGridFilled.sparse_indices == indices, axis=1))
-        listenerVoxel = self.voxelGridFilled.points[index[0]]
+        index = np.where(np.all(self.voxelGrid.sparse_indices == indices, axis=1))
+        listenerVoxel = self.voxelGrid.points[index[0]]
 
-        self.pointsWithNeighbours = self.getNeighbours(self.voxelGridFilled)
+        self.pointsWithNeighbours = self.getNeighbours(self.voxelGrid)
         self.dopathfinding = Pathfinder(self.pointsWithNeighbours)
 
 
-        pass
         # 1. TODO discretize the mesh
         # visualize the trimesh data
 
@@ -72,17 +68,16 @@ class SceneProcessor():
         # P.s. step 3 and 4 are continuously looping
 
 
-    def getNeighbours(self, voxelGrid : VoxelGrid):
-        voxelSize = self.voxelGrid.shape
+    def getNeighbours(self, vg : VoxelGrid):
+        voxelSize = vg.shape
         output : list[vp.VoxelPoint] = []
 
         for h in range(voxelSize[0]):
             for w in range(voxelSize[1]):
                 for d in range(voxelSize[2]):
-                    print(f"Looking for indices {h}; {w}; {d}")
-                    entry = self.getNeighbour(self.voxelGrid, np.array([h, w, d]), self.voxelSize)
+                    entry = self.getNeighbour(vg, np.array([h, w, d]), voxelSize)
                     output.append(entry)
-        self.testVoxelPoints(self.voxelGrid, output)
+        self.testVoxelPoints(vg, output)
         return output
 
 
@@ -160,11 +155,11 @@ class SceneProcessor():
             indices (tuple): X-Y-Z indices that we wish to get the 1D array index
         """
         # Use the 3D coordinate to get the voxel's index and get the centre voxel from the array new
-        try:
-            index = np.where(np.all(voxelGrid.sparse_indices == indices, axis=1))[0][0]
-            return index
-        except ValueError:
-            pass
+        index = np.where(np.all(voxelGrid.sparse_indices == indices, axis=1))[0][0]
+        return index
+
+
+
 
     def extractTriangles(self, input : trimesh.Trimesh):
         counter = 0
@@ -177,8 +172,6 @@ class SceneProcessor():
         faceCounter = 0
 
         for face in input.faces:
-            
-
             vrtx1 = input.vertices[face[0]]
             vrtxEntry = [vrtx1]
             vertices.append(vrtxEntry)
@@ -192,7 +185,6 @@ class SceneProcessor():
             faceIndex += 1
 
             faces.append(faceEntry)
-
             faceCounter += 1
 
             if(faceCounter % 8 == 0):
