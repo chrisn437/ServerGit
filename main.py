@@ -11,11 +11,11 @@ from src.project.tcpNetwork import Server
 import src.Structs.Constants as const
 
 def main():
-    s = Parser(const.SAVED_SCENE)
+    s = Parser("res\\savedFile_162649.txt")
     geo = s.getTrimeshGeo
     sceneProcessor = SceneProcessor(geo)
-    #oscNetwork = OscNetwork()
-    #tcpNetwork = Server("127.0.0.1", 7000)
+    oscNetwork = OscNetwork(sceneProcessor)
+    tcpNetwork = Server("192.168.1.214", 8050)
     #creatserver = Server()
 
 if __name__ == '__main__':

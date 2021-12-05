@@ -1,23 +1,19 @@
+import math
 import numpy as np
 import pandas as pd
 from collections import OrderedDict
 import heapq
 import matplotlib as mpl
 import src.Structs.VoxelPoint as vp
-
+from src.Structs.Vector3 import Vector3
 from mpl_toolkits.mplot3d import Axes3D
 
 import matplotlib.pyplot as plt
-
-
-
-
-
-
+#from src.project.oscNetwork import OscNetwork
 
 class Pathfinder():
 
-    def __init__(self, gridlayout):
+    def __init__(self, gridlayout, start : Vector3, end : int):
         self.x1 = []
         self.y1 = []
         self.z1 = []
@@ -28,8 +24,10 @@ class Pathfinder():
 
         self.coord_pairs = []
 
-        self.start = (0, 0, 0)
-        self.goal = (2, 2, 2)
+
+
+        self.start = start
+        self.goal = end
 
         self.neighbors(gridlayout)
 
@@ -40,7 +38,7 @@ class Pathfinder():
 
         self.route = self.route[::-1]
 
-        print(self.route)
+        #print(self.route)
 
         self.x_coords: list = []
 
@@ -67,68 +65,10 @@ class Pathfinder():
 
         self.z_coords = np.array(self.z_coords)
 
-        fig = plt.figure(figsize=(12, 12))
-        ax = fig.add_subplot(111, projection='3d')
+        #self.defangel(self.route)
 
-        ax.scatter3D(1, 1, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 2, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 3, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 1, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 2, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 3, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 1, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 2, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 3, 1, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 1, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 2, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 3, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 1, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 2, 2, marker="x", color="black", s=100)
-
-        ax.scatter3D(2, 3, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 1, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 2, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 3, 2, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 1, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 2, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(1, 3, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 1, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 2, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(2, 3, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 1, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 2, 3, marker="o", color="black", s=100)
-
-        ax.scatter3D(3, 3, 3, marker="o", color="black", s=100)
-        ax.scatter3D(self.goal[0], self.goal[1], self.goal[2], marker="*", color="red", s=100)
-        ax.plot3D(self.x_coords, self.y_coords, self.z_coords, color="pink")
-
-
-        plt.show()
-
+    def getRoute(self):
+        return self.route
 
     def neighbors(self, gridLayout):
         x1: list = []
@@ -172,9 +112,8 @@ class Pathfinder():
 
         print(self.coord_pairs)
 
-        self.start = (0, 0, 0)
 
-        self.goal = (2, 2, 2)
+
 
 
 
@@ -191,46 +130,28 @@ class Pathfinder():
 
     def astar(self, start, goal):
         close_set = set()
-
         came_from = {}
-
         gscore = {start: 0}
-
         fscore = {start: self.heuristic(start, goal)}
-
         oheap = []
-
         heapq.heappush(oheap, (fscore[start], start))
-
         iter: int = 0
 
         while oheap:
-
             iter += 1
-
-            print(iter)
-
             current = heapq.heappop(oheap)[1]
-
             neighbours = self.available_neighbours(current[0], current[1], current[2])
 
             if current == goal:
-
                 data = []
-
                 while current in came_from:
                     data.append(current)
-
                     current = came_from[current]
-
                 return data
 
             close_set.add(current)
-
             for x, y, z in neighbours:
-
                 neighbour = x, y, z
-
                 tentative_g_score = gscore[current] + self.heuristic(current, neighbour)
 
                 if neighbour in close_set and tentative_g_score >= gscore.get(neighbour, 0):
@@ -238,14 +159,22 @@ class Pathfinder():
 
                 if tentative_g_score < gscore.get(neighbour, 0) or neighbour not in [i[1] for i in oheap]:
                     came_from[neighbour] = current
-
                     gscore[neighbour] = tentative_g_score
-
                     fscore[neighbour] = tentative_g_score + self.heuristic(neighbour, goal)
-
                     heapq.heappush(oheap, (fscore[neighbour], neighbour))
 
         return False
 
+    def defangel(self, x_y_route):
+        my_route = x_y_route
 
+        degrees = []
+        for i in my_route:
+            route = my_route[i]
+            route2 = my_route[i+1]
+            my_radians = math.atan2(route[1]-route2[1], route[0]-route2[0])
+            my_degrees = math.degrees(my_radians)
+            degrees.append(my_degrees)
+        print(my_degrees)
+        #self.givedegrees = self.OscNetwork.start_listening(my_degrees)
 

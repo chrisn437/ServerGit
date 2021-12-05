@@ -1,13 +1,11 @@
 from src.project.parser import Parser
 from src.Structs.Constants import SAVED_SCENE
 import socket
-import threading
 import atexit
 import os
 import datetime
-
-
 import argparse
+
 savedscene = SAVED_SCENE
 
 class TcpNetwork():
@@ -57,7 +55,7 @@ class Server():
         self.TCPServerSocket.listen(1)
 
         #Create file and write stuff in it
-        path = "res\\"
+        path = "res"
         time = str(datetime.datetime.now().strftime("%H%M%S"))
         fileName = "savedFile_" + time + ".txt"
         outputpath = os.path.join(os.getcwd(), path, fileName)
@@ -80,10 +78,10 @@ class Server():
                 if data:
                     print(f"Received {data}")
                     # TODO Initialize the parser here
-                    Parser(data)
+
                 else:
                     # TODO pass the file to the parser here
-                    Parser()
+                    Parser(outputpath)
                     print(f"No more data")
                     break
 

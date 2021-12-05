@@ -16,7 +16,7 @@ class Parser():
         self.tree = ET.parse(xmlfile)
         self.root = self.tree.getroot()
 
-        ET.dump(self.tree)
+        #ET.dump(self.tree)
 
         self.vrtx : list = []
         self.fc :list = []
@@ -24,15 +24,13 @@ class Parser():
         self.meshrot : list= []
         self.__trimeshGeo : trimesh.Trimesh = None
         # TODO add marker container
+        self.markers : list = []
         arucoMarker = Marker(2, "shelf 2", (2, 6, 0), (1, 2, 3))
 
 
         self.scene : trimesh.Trimesh = None
         self.sceneProcessor = None
-
-
         self.parseScene()
-        self.createTrimeshScene(None, None)
 
     @property
     def getTrimeshGeo(self):
@@ -69,11 +67,32 @@ class Parser():
             atribute : list = new_atbrot.split(",")
             atribute = [float(i) for i in atribute]
             self.meshrot.append(Vector3(atribute[0], atribute[1], atribute[2]))
-        self.createTrimeshScene(self.vrtx, self.fc)
+
+        for elm in self.root.findall("./Marker"):
+            # 1. Extract pivot point and pivot orientation
+            # 2. Create a mesh object and initialize it with the pivots, vertices, face
+            # 3. Set the mesh object equal to the mesh member variable
+            #self.mesh = Mesh(pivotPoint, pivotOrientat, self.vrtx, self.fc)
+            atbpos = elm.attrib.get("pos")
+            new_atbpos = str(atbpos)[1:-1]
+            atribute : list = new_atbpos.split(",")
+            pos = [float(i) for i in atribute]
+            pos = Vector3(pos[0], pos[1], pos[2])
+
+            atbRot = elm.attrib.get("rot").strip("(").strip(")").split(",")
+            atbRot = [float(i) for i in atbRot]
+
+            atbID = int(elm.attrib.get("id"))
+
+            if atbID == 49:
+                continue
+            self.markers.append(Marker(atbID, atbID, pos, atbRot))
+
+        self.createTrimeshScene(self.vrtx, self.fc, self.markers)
 
     
 
-    def createTrimeshScene(self, vectorvertex, vectorfaces):
+    def createTrimeshScene(self, vectorvertex, vectorfaces, markers):
         # TODO add markers to the scene.metadata collection
         self.arucoMarker = 1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0)
         #  metadata = {}
@@ -81,7 +100,8 @@ class Parser():
 
         # TODO Create a trimesh object
         if(self.__trimeshGeo is None):
-            self.__trimeshGeo = trimesh.Trimesh(vectorvertex, vectorfaces)        
+            self.__trimeshGeo :trimesh.Trimesh  = trimesh.Trimesh(vectorvertex, vectorfaces)
+            self.__trimeshGeo.metadata['markers'] = markers
         #self.startSceneProcessor(sceneGeo)
 
     def startSceneProcessor(self, geometry):

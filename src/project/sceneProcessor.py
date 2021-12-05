@@ -40,7 +40,10 @@ class SceneProcessor():
         # Get the bounding box of the geometry and generate a filled voxel grid out of it
         self.bb = self.tmg.bounding_box
         self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)
+        visualization = self.voxelGrid.as_boxes(colors=(1, 0.7, 0.4, 0.3)).show()
+
         self.voxelGrid = self.voxelGrid.fill()
+        visualization = self.voxelGrid.as_boxes(colors=(1, 0.7, 0.4, 0.3)).show()
 
 
         # Create a listener position in X-Y-Z
@@ -56,7 +59,7 @@ class SceneProcessor():
         listenerVoxel = self.voxelGrid.points[index[0]]
 
         self.pointsWithNeighbours = self.getNeighbours(self.voxelGrid)
-        self.dopathfinding = Pathfinder(self.pointsWithNeighbours)
+        #self.dopathfinding = Pathfinder(self.pointsWithNeighbours, start=None, end=None)
 
 
         # 1. TODO discretize the mesh
@@ -67,6 +70,11 @@ class SceneProcessor():
         # 4. TODO output the direction of navigation
         # P.s. step 3 and 4 are continuously looping
 
+    def getMarkers(self):
+        return self.tmg.metadata['markers']
+
+    def getGrid(self):
+        return self.pointsWithNeighbours
 
     def getNeighbours(self, vg : VoxelGrid):
         voxelSize = vg.shape
