@@ -40,10 +40,8 @@ class SceneProcessor():
         # Get the bounding box of the geometry and generate a filled voxel grid out of it
         self.bb = self.tmg.bounding_box
         self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)
-        visualization = self.voxelGrid.as_boxes(colors=(1, 0.7, 0.4, 0.3)).show()
 
         self.voxelGrid = self.voxelGrid.fill()
-        visualization = self.voxelGrid.as_boxes(colors=(1, 0.7, 0.4, 0.3)).show()
 
 
         # Create a listener position in X-Y-Z

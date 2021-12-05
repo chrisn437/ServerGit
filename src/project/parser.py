@@ -37,19 +37,7 @@ class Parser():
         return self.__trimeshGeo
 
     def parseScene(self):
-        for elm in self.root.findall(".//Vertex"):
-            atb = elm.attrib.get("position")
-            vertex : list = atb.split()
-            vertex = [float(i) for i in vertex]
-            self.vrtx.append([vertex[0], vertex[1], vertex[2]])
-
-        for elm in self.root.findall(".//Face"):
-            atb = elm.attrib.get("vertices")
-            face : list = atb.split()
-            face = [float(i) for i in face]
-            self.fc.append([face[0], face[1], face[2]])
-
-
+        pivotPoint = None
         for elm in self.root.findall("./Mesh"):
             # 1. Extract pivot point and pivot orientation
             # 2. Create a mesh object and initialize it with the pivots, vertices, face
@@ -59,7 +47,24 @@ class Parser():
             new_atbpos = str(atbpos)[1:-1]
             atribute : list = new_atbpos.split(",")
             atribute = [float(i) for i in atribute]
+            pivotPoint = [atribute[0], atribute[1], atribute[2]]
             self.meshpos.append([atribute[0], atribute[1], atribute[2]])
+
+
+        for elm in self.root.findall(".//Vertex"):
+            atb = elm.attrib.get("position")
+            vertex : list = atb.split()
+            vertex = [float(i) for i in vertex]
+            self.vrtx.append([vertex[0] + pivotPoint[0],
+                              vertex[1] + pivotPoint[1],
+                              vertex[2] + pivotPoint[2]])
+
+        for elm in self.root.findall(".//Face"):
+            atb = elm.attrib.get("vertices")
+            face : list = atb.split()
+            face = [float(i) for i in face]
+            self.fc.append([face[0], face[1], face[2]])
+
 
         for elm in self.root.findall("./Mesh"):
             atbrot = elm.attrib.get("rot")

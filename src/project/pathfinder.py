@@ -80,6 +80,11 @@ class Pathfinder():
             length = len(i.Neighbours)
             while length > 0:
                 first = i.Indices3D
+                if(first[0] == None):
+                    pass
+                if (first[1] == None):
+                    pass
+
                 x1.append(first[0])
                 y1.append(first[1])
                 z1.append(first[2])
@@ -87,6 +92,10 @@ class Pathfinder():
         print(x1)
         print(y1)
         print(z1)
+
+        print(len(x1))
+        print(len(y1))
+        print(len(z1))
 
         x2 : list = []
         y2 : list = []
@@ -101,6 +110,9 @@ class Pathfinder():
                 y2.append(newneighbour[1])
                 z2.append(newneighbour[2])
 
+        print(len(x2))
+        print(len(y2))
+        print(len(z2))
         print(x2)
         print(y2)
         print(z2)

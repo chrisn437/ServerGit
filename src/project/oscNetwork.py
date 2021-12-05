@@ -64,7 +64,7 @@ class OscNetwork():
 
 
 
-        route = []
+        routes = []
         grid = self.sceneProcessor.getGrid()
         markers = self.sceneProcessor.getMarkers()
         print(markers)
@@ -75,10 +75,13 @@ class OscNetwork():
                     if marker.id == i:
                         startIndecie = grid[0].voxelGrid.points_to_indices(startPos.Vec3)
                         markerIndecie = grid[0].voxelGrid.points_to_indices(marker.pos.Vec3)
+
                         startIndecie = (startIndecie[0], startIndecie[1], startIndecie[2])
                         markerIndecie = (markerIndecie[0], markerIndecie[1], markerIndecie[2])
+                        print(startIndecie)
+                        print(markerIndecie)
                         pathfinder = Pathfinder(grid, startIndecie, markerIndecie)
-                        route.append(pathfinder.getRoute())
+                        routes.append(pathfinder.getRoute())
             else:
                 startPos = None
                 endPos = None
@@ -92,7 +95,25 @@ class OscNetwork():
                 endrIndecie = grid[0].voxelGrid.points_to_indices(endPos.Vec3)
                 startIndecie = (startIndecie[0], startIndecie[1], startIndecie[2])
                 endrIndecie = (endrIndecie[0], endrIndecie[1], endrIndecie[2])
-                pathfinder = Pathfinder(grid, startIndecie, endrIndecie)
-                route.append(pathfinder.getRoute())
 
-        self.client.send_message("/destinations", route)
+                print(startIndecie)
+                print(endrIndecie)
+                pathfinder = Pathfinder(grid, startIndecie, endrIndecie)
+                routes.append(pathfinder.getRoute())
+
+        points = []
+        for route in routes:
+            for indice in route:
+                e = np.array([indice[0], indice[1], indice[2]]) # go from tuple to list because tuple doesnt have asType as required by pycharm
+                entry = grid[0].voxelGrid.indices_to_points(e)
+                points.append(entry)
+
+        # Flatten out the points array into a single 1D array
+        output = []
+        for point in points:
+            for dimension in point:
+                output.append(dimension)
+        print(points)
+        print(route)
+
+        self.client.send_message("/destinations", output)
