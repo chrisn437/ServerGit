@@ -36,7 +36,7 @@ class SceneProcessor():
             self.tmg = trimesh.load(fp)
 
 
-        self.voxelSize  : float= 0.34
+        self.voxelSize  : float= 0.2
         # Get the bounding box of the geometry and generate a filled voxel grid out of it
         self.bb = self.tmg.bounding_box
         self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)

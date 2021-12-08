@@ -89,13 +89,13 @@ class Pathfinder():
                 y1.append(first[1])
                 z1.append(first[2])
                 length -= 1
-        print(x1)
-        print(y1)
-        print(z1)
+        #print(x1)
+        #print(y1)
+        #print(z1)
 
-        print(len(x1))
-        print(len(y1))
-        print(len(z1))
+        #print(len(x1))
+        #print(len(y1))
+        #print(len(z1))
 
         x2 : list = []
         y2 : list = []
@@ -110,12 +110,7 @@ class Pathfinder():
                 y2.append(newneighbour[1])
                 z2.append(newneighbour[2])
 
-        print(len(x2))
-        print(len(y2))
-        print(len(z2))
-        print(x2)
-        print(y2)
-        print(z2)
+
 
         self.coord_pairs = pd.DataFrame(OrderedDict((('x1', pd.Series(x1)), ('y1', pd.Series(y1)), ('z1', pd.Series(z1)),
                                                 ('x2', pd.Series(x2)), ('y2', pd.Series(y2)), ('z2', pd.Series(z2)))))
@@ -177,16 +172,5 @@ class Pathfinder():
 
         return False
 
-    def defangel(self, x_y_route):
-        my_route = x_y_route
 
-        degrees = []
-        for i in my_route:
-            route = my_route[i]
-            route2 = my_route[i+1]
-            my_radians = math.atan2(route[1]-route2[1], route[0]-route2[0])
-            my_degrees = math.degrees(my_radians)
-            degrees.append(my_degrees)
-        print(my_degrees)
-        #self.givedegrees = self.OscNetwork.start_listening(my_degrees)
 

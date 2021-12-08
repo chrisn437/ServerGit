@@ -28,8 +28,8 @@ class OscNetwork():
         #self.sceneParser = Parser(SAVED_SCENE)
         print("Initializing OSC interface")
 
-        self.magicLeapIP = "192.168.1.112"
-        self.ip = "192.168.1.214"
+        self.magicLeapIP = "192.168.1.102"
+        self.ip = "192.168.1.100"
         self.sendPort = 8052
         self.inPort = 8051
 
@@ -106,13 +106,16 @@ class OscNetwork():
             for indice in route:
                 e = np.array([indice[0], indice[1], indice[2]]) # go from tuple to list because tuple doesnt have asType as required by pycharm
                 entry = grid[0].voxelGrid.indices_to_points(e)
+                entry = np.array([entry[0], entry[1], entry[2]])
                 points.append(entry)
+                print(entry)
 
         # Flatten out the points array into a single 1D array
         output = []
         for point in points:
             for dimension in point:
                 output.append(dimension)
+
         print(points)
         print(route)
 
