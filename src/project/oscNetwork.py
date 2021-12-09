@@ -1,7 +1,8 @@
-
+import datetime
 import argparse
 import math
 import numpy as np
+import os
 
 from src.Structs.Vector3 import Vector3
 
@@ -10,6 +11,7 @@ from pythonosc import osc_server
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
 from src.project.pathfinder import Pathfinder
+from src.project.userPosTracking import UserPosTracking
 
 from src.Structs.Constants import SAVED_SCENE
 from src.project.parser import Parser
@@ -28,8 +30,8 @@ class OscNetwork():
         #self.sceneParser = Parser(SAVED_SCENE)
         print("Initializing OSC interface")
 
-        self.magicLeapIP = "192.168.1.102"
-        self.ip = "192.168.1.100"
+        self.magicLeapIP = "192.168.1.100"
+        self.ip = "192.168.1.103"
         self.sendPort = 8052
         self.inPort = 8051
 
@@ -41,12 +43,15 @@ class OscNetwork():
         #catch OSC message
         self.dispatcher = dispatcher.Dispatcher()
         self.dispatcher.map("/setDestinations", self.start_listening)
-
+        self.dispatcher.map("/position", self.posListener)
+        self.dispatcher.map(("/stop", self.stopListening))
 
         #Serer for listening
         server = osc_server.ThreadingOSCUDPServer((self.ip, self.inPort),self.dispatcher)
         print("Servering on {}".format(server.server_address))
         server.serve_forever()
+
+        self.listenToPositionUpdates = True
 
 
 
@@ -120,3 +125,34 @@ class OscNetwork():
         print(route)
 
         self.client.send_message("/destinations", output)
+
+    def stopListening(self, addr):
+        self.listenToPositionUpdates = False
+
+    def posListener(self, addr, index1, index2, index3):
+        print(addr)
+
+        time = str(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
+        self.x = []
+        self.x.append((index1, index2, index3, time))
+
+        path = "res"
+
+
+        if self.listenToPositionUpdates == True:
+            fileName = "savedPositions_1.txt"
+            outputpath = os.path.join(os.getcwd(), path, fileName)
+            fileexist: bool = os.path.exists(outputpath)
+            with open(outputpath, "a" if fileexist else "w", newline=' ') as fh:
+                fh.write(self.x)
+                fh.flush()
+                fh.close()
+
+        print(index1)
+        print(index2)
+        print(index3)
+
+
+
+        #self.visualize = UserPosTracking(self.x,self.y,self.t)
+        pass
