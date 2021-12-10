@@ -44,7 +44,7 @@ class OscNetwork():
         self.dispatcher = dispatcher.Dispatcher()
         self.dispatcher.map("/setDestinations", self.start_listening)
         self.dispatcher.map("/position", self.posListener)
-        self.dispatcher.map(("/stop", self.stopListening))
+        self.dispatcher.map("/stop", self.stopListening)
 
         #Serer for listening
         server = osc_server.ThreadingOSCUDPServer((self.ip, self.inPort),self.dispatcher)
@@ -60,14 +60,11 @@ class OscNetwork():
         startPos = startPos.strip('(').strip(')')
         startPos = startPos.replace(",", "")
         startPos = startPos.split()
+
         print(startPos)
         startPos = [float(i) for i in startPos]
         startPos = Vector3(startPos[0], startPos[1], startPos[2])
         destinatons = [int(i) for i in destinatons]
-
-
-
-
 
         routes = []
         grid = self.sceneProcessor.getGrid()
@@ -131,30 +128,20 @@ class OscNetwork():
     def stopListening(self, addr):
         self.listenToPositionUpdates = False
 
-    def posListener(self, addr, index1, index2, index3):
-        print(addr)
-
-        time = str(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3])
-        self.x = []
-        self.x.append((index1, index2, index3, time))
-
-        path = "res"
-
-
+    def posListener(self, addr, *args):
         if self.listenToPositionUpdates == True:
-            fileName = "savedPositions_1.txt"
+            print(f"{addr} {args}")
+
+            time = str(datetime.utcnow().strftime('%H:%M:%S.%f')[:-3])
+            path = "res"
+
+            fileName = f"savedPositions_{time}.txt"
             outputpath = os.path.join(os.getcwd(), path, fileName)
             fileexist: bool = os.path.exists(outputpath)
-            with open(outputpath, "a" if fileexist else "w", newline=' ') as fh:
-                fh.write(self.x)
+            with open(outputpath, "a" if fileexist else "w+", newline=' ') as fh:
+                fh.write((time, *args))
                 fh.flush()
                 fh.close()
-
-        print(index1)
-        print(index2)
-        print(index3)
-
-
 
         #self.visualize = UserPosTracking(self.x,self.y,self.t)
         pass
