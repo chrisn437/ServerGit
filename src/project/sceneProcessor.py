@@ -37,11 +37,14 @@ class SceneProcessor():
 
 
         self.voxelSize  : float= 0.5
+        self.voxelSize  : float= 0.25
+
         # Get the bounding box of the geometry and generate a filled voxel grid out of it
         self.bb = self.tmg.bounding_box
         self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)
 
         self.voxelGrid = self.voxelGrid.fill()
+        print(self.voxelGrid.bounds)
 
 
         # Create a listener position in X-Y-Z
@@ -102,8 +105,10 @@ class SceneProcessor():
 
         neighbours = []
         # Brute-force for all neighbours, subtract -1 from gridsize to get 0-indexed gridSized
+        #height, width, depth individually
         if h > 0:
             neighbours.append((h - 1, w, d)) 
+
         if h < gridSize[0] - 1:
             neighbours.append((h + 1, w, d))
         
@@ -114,8 +119,67 @@ class SceneProcessor():
 
         if d > 0:
             neighbours.append((h, w, d - 1))
+
         if d < gridSize[2] - 1:
             neighbours.append((h, w, d + 1))
+
+        
+        # Width and depth together
+        if (d < gridSize[2] - 1) and (w < gridSize[1] - 1):
+            neighbours.append((h, w + 1, d + 1))   
+
+        if (d > 0) and ( w < gridSize[1] - 1):
+            neighbours.append((h, w + 1, d - 1))
+
+        if (w > 0) and (d < gridSize[2] - 1):
+            neighbours.append((h, w - 1, d + 1))
+
+        if (w > 0) and (d > 0):
+            neighbours.append((h, w - 1, d - 1))
+
+
+        # Height and width together
+        if (h < gridSize[0] - 1) and (w < gridSize[1] - 1):
+            neighbours.append((h + 1, w + 1, d))
+        if (h < gridSize[0] - 1) and (w > 0):
+            neighbours.append((h + 1, w - 1, d))
+        if h > 0 and (w < gridSize[1] - 1):
+            neighbours.append((h - 1, w + 1, d)) 
+        if (h > 0) and (w > 0):
+            neighbours.append((h - 1, w - 1, d)) 
+
+
+        # Height and depth together
+        if (h < gridSize[0] - 1) and (d < gridSize[2] - 1):
+            neighbours.append((h + 1, w, d + 1))
+        if (h < gridSize[0] - 1) and (d > 0):
+            neighbours.append((h + 1, w, d - 1))
+        if (h > 0) and (d < gridSize[2] - 1):
+            neighbours.append((h - 1, w, d + 1)) 
+        if (h > 0) and (d > 0):
+            neighbours.append((h - 1, w, d - 1)) 
+
+
+        # Height, width and depth together
+        if (h > 0) and (d < gridSize[2] - 1) and (w < gridSize[1] - 1):
+            neighbours.append((h - 1, w + 1, d + 1))
+        if (h > 0) and (d > 0) and (w < gridSize[1] - 1):
+            neighbours.append((h - 1, w + 1, d - 1))
+        if (h > 0) and (w > 0) and (d < gridSize[2] - 1):
+            neighbours.append((h - 1, w - 1, d + 1))
+        if (h > 0) and (w > 0) and (d > 0):
+            neighbours.append((h - 1, w - 1, d - 1))
+
+        if (h < gridSize[0] - 1) and (d < gridSize[2] - 1) and (w < gridSize[1] - 1):
+            neighbours.append((h + 1, w + 1, d + 1))
+        if (h < gridSize[0] - 1) and (d > 0) and (w < gridSize[1] - 1):
+            neighbours.append((h + 1, w + 1, d - 1))
+        if (h < gridSize[0] - 1) and (w > 0) and (d < gridSize[2] - 1):
+            neighbours.append((h + 1, w - 1, d + 1))
+        if (h < gridSize[0] - 1) and (w > 0) and (d > 0):
+            neighbours.append((h + 1, w - 1, d - 1))
+
+
         
         output = vp.VoxelPoint()
         output.voxelGrid = voxelGrid

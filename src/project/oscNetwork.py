@@ -87,6 +87,7 @@ class OscNetwork():
                         print(markerIndecie)
                         pathfinder = Pathfinder(grid, startIndecie, markerIndecie)
                         routes.append(pathfinder.getRoute())
+                        print("Route appended..")
             else:
                 startPos = None
                 endPos = None
@@ -105,6 +106,7 @@ class OscNetwork():
                 print(endrIndecie)
                 pathfinder = Pathfinder(grid, startIndecie, endrIndecie)
                 routes.append(pathfinder.getRoute())
+                print("Route appended..")
 
         points = []
         for route in routes:

@@ -11,7 +11,7 @@ from src.project.parser import Parser
 import src.Structs.Constants as const
 
 def main():
-    s = Parser("res\\savedFile_224024.txt")
+    s = Parser("res/savedFile_224024.txt")
     geo = s.getTrimeshGeo
     sceneProcessor = SceneProcessor(geo)
     oscNetwork = OscNetwork(sceneProcessor)

@@ -145,6 +145,7 @@ class Pathfinder():
         iter: int = 0
 
         while oheap:
+            #print(f"oheap iter {iter}")
             iter += 1
             current = heapq.heappop(oheap)[1]
             neighbours = self.available_neighbours(current[0], current[1], current[2])
@@ -152,6 +153,7 @@ class Pathfinder():
             if current == goal:
                 data = []
                 while current in came_from:
+                    print("Calculating path..")
                     data.append(current)
                     current = came_from[current]
                 return data
