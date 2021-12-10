@@ -24,7 +24,7 @@ from src.Structs.Constants import SAVED_SCENE, COMPLEX_SCENE
 class OscNetwork():
     """ OSC Message receiver and sender
     """
-
+    time2 = str(datetime.datetime.now().strftime(("%H%M%S")))
 
     def __init__(self, sceneProcessor : sp.SceneProcessor):
         #self.sceneParser = Parser(SAVED_SCENE)
@@ -44,14 +44,14 @@ class OscNetwork():
         self.dispatcher = dispatcher.Dispatcher()
         self.dispatcher.map("/setDestinations", self.start_listening)
         self.dispatcher.map("/position", self.posListener)
-        self.dispatcher.map("/stop", self.stopListening)
+        self.dispatcher.map("/stopTiming", self.stopListening)
+        self.listenToPositionUpdates = True
+
 
         #Serer for listening
         server = osc_server.ThreadingOSCUDPServer((self.ip, self.inPort),self.dispatcher)
         print("Servering on {}".format(server.server_address))
         server.serve_forever()
-
-        self.listenToPositionUpdates = True
 
 
 
@@ -64,6 +64,8 @@ class OscNetwork():
         print(startPos)
         startPos = [float(i) for i in startPos]
         startPos = Vector3(startPos[0], startPos[1], startPos[2])
+        startingPos = startPos
+
         destinatons = [int(i) for i in destinatons]
 
         routes = []
@@ -85,6 +87,7 @@ class OscNetwork():
                         pathfinder = Pathfinder(grid, startIndecie, markerIndecie)
                         routes.append(pathfinder.getRoute())
                         print("Route appended..")
+
             else:
                 startPos = None
                 endPos = None
@@ -105,6 +108,8 @@ class OscNetwork():
                 routes.append(pathfinder.getRoute())
                 print("Route appended..")
 
+
+
         points = []
         for route in routes:
             for indice in route:
@@ -112,36 +117,34 @@ class OscNetwork():
                 entry = grid[0].voxelGrid.indices_to_points(e)
                 entry = np.array([entry[0], entry[1], entry[2]])
                 points.append(entry)
-                print(entry)
+
 
         # Flatten out the points array into a single 1D array
         output = []
         for point in points:
             for dimension in point:
                 output.append(dimension)
-
-        print(points)
         print(route)
-
+        print(output)
         self.client.send_message("/destinations", output)
 
     def stopListening(self, addr):
+        print(addr)
         self.listenToPositionUpdates = False
 
     def posListener(self, addr, *args):
+
         if self.listenToPositionUpdates == True:
             print(f"{addr} {args}")
 
-            time = str(datetime.utcnow().strftime('%H:%M:%S.%f')[:-3])
             path = "res"
-
-            fileName = f"savedPositions_{time}.txt"
+            fileName = f"PositionLog_{OscNetwork.time2}.txt"
             outputpath = os.path.join(os.getcwd(), path, fileName)
             fileexist: bool = os.path.exists(outputpath)
-            with open(outputpath, "a" if fileexist else "w+", newline=' ') as fh:
-                fh.write((time, *args))
+            time = str(datetime.datetime.now().strftime(('%H:%M:%S.%f')))
+            with open(outputpath, "a" if fileexist else "w") as fh:
+                fh.write(f"{time} {args} \n\r")
                 fh.flush()
                 fh.close()
 
-        #self.visualize = UserPosTracking(self.x,self.y,self.t)
-        pass
+
