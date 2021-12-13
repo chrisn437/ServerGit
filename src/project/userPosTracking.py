@@ -1,14 +1,21 @@
 #from src.project.oscNetwork import OscNetwork
 #import matplotlib.pylab as plt
+import re
 
 class UserPosTracking():
-    def __init__(self, x, y, t):
+    def __init__(self):
+        f = open("res\\PositionLog_133554.txt", "r")
+        lines = f.readlines()
+        for i in range(100):
+            lines1 = lines[i]
 
-        self.scatter(x, y)
+            text_in_brackets = re.findall('\d.\d\d\d\d\d\d\d\d', lines1)
 
 
-    def scatter(self, xpos, ypos):
-        for x in xpos:
-            plt.scatter(xpos[x], ypos[x])
-            plt.hold(True)
-        plt.show()
+
+
+
+        print(text_in_brackets[0])
+
+        f.close()
+
