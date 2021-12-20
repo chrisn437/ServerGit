@@ -23,46 +23,32 @@ class Pathfinder():
         self.z2 = []
 
         self.coord_pairs = []
-
-
-
         self.start = start
         self.goal = end
 
         self.neighbors(gridlayout)
 
-
         self.route = self.astar(self.start, self.goal)
-
         self.route = self.route + [self.start]
-
         self.route = self.route[::-1]
 
         #print(self.route)
 
         self.x_coords: list = []
-
         self.y_coords: list = []
-
         self.z_coords: list = []
 
         for i in (range(0, len(self.route))):
             x = self.route[i][0]
-
             y = self.route[i][1]
-
             z = self.route[i][2]
 
             self.x_coords.append(x)
-
             self.y_coords.append(y)
-
             self.z_coords.append(z)
 
         self.x_coords = np.array(self.x_coords)
-
         self.y_coords = np.array(self.y_coords)
-
         self.z_coords = np.array(self.z_coords)
 
         #self.defangel(self.route)
@@ -89,18 +75,10 @@ class Pathfinder():
                 y1.append(first[1])
                 z1.append(first[2])
                 length -= 1
-        #print(x1)
-        #print(y1)
-        #print(z1)
-
-        #print(len(x1))
-        #print(len(y1))
-        #print(len(z1))
 
         x2 : list = []
         y2 : list = []
         z2 : list = []
-
 
         for i in myIndices:
             neighbours = i.Neighbours
@@ -114,14 +92,8 @@ class Pathfinder():
 
         self.coord_pairs = pd.DataFrame(OrderedDict((('x1', pd.Series(x1)), ('y1', pd.Series(y1)), ('z1', pd.Series(z1)),
                                                 ('x2', pd.Series(x2)), ('y2', pd.Series(y2)), ('z2', pd.Series(z2)))))
-
         self.coord_pairs = self.coord_pairs.sort_values(['x1', 'y1', 'z1'], ascending=[True, True, True])
-
         print(self.coord_pairs)
-
-
-
-
 
 
     def available_neighbours(self, current_x, current_y, current_z):

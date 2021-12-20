@@ -101,7 +101,6 @@ class SceneProcessor():
         #height, width, depth individually
         if h > 0:
             neighbours.append((h - 1, w, d)) 
-
         if h < gridSize[0] - 1:
             neighbours.append((h + 1, w, d))
         
@@ -112,7 +111,6 @@ class SceneProcessor():
 
         if d > 0:
             neighbours.append((h, w, d - 1))
-
         if d < gridSize[2] - 1:
             neighbours.append((h, w, d + 1))
 
@@ -120,13 +118,10 @@ class SceneProcessor():
         # Width and depth together
         if (d < gridSize[2] - 1) and (w < gridSize[1] - 1):
             neighbours.append((h, w + 1, d + 1))   
-
         if (d > 0) and ( w < gridSize[1] - 1):
             neighbours.append((h, w + 1, d - 1))
-
         if (w > 0) and (d < gridSize[2] - 1):
             neighbours.append((h, w - 1, d + 1))
-
         if (w > 0) and (d > 0):
             neighbours.append((h, w - 1, d - 1))
 

@@ -11,7 +11,6 @@ from pythonosc import osc_server
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
 from src.project.pathfinder import Pathfinder
-from src.project.userPosTracking import UserPosTracking
 
 from src.Structs.Constants import SAVED_SCENE
 from src.project.parser import Parser
