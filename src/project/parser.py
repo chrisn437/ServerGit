@@ -16,14 +16,11 @@ class Parser():
         self.tree = ET.parse(xmlfile)
         self.root = self.tree.getroot()
 
-        #ET.dump(self.tree)
-
         self.vrtx : list = []
         self.fc :list = []
         self.meshpos : list= []
         self.meshrot : list= []
         self.__trimeshGeo : trimesh.Trimesh = None
-        # TODO add marker container
         self.markers : list = []
         arucoMarker = Marker(2, "shelf 2", (2, 6, 0), (1, 2, 3))
 
@@ -42,7 +39,6 @@ class Parser():
             # 1. Extract pivot point and pivot orientation
             # 2. Create a mesh object and initialize it with the pivots, vertices, face
             # 3. Set the mesh object equal to the mesh member variable
-            #self.mesh = Mesh(pivotPoint, pivotOrientat, self.vrtx, self.fc)
             atbpos = elm.attrib.get("pos")
             new_atbpos = str(atbpos)[1:-1]
             atribute : list = new_atbpos.split(",")
@@ -50,7 +46,7 @@ class Parser():
             pivotPoint = [atribute[0], atribute[1], atribute[2]]
             self.meshpos.append([atribute[0], atribute[1], atribute[2]])
 
-
+        # Parses the Vertexes
         for elm in self.root.findall(".//Vertex"):
             atb = elm.attrib.get("position")
             vertex : list = atb.split()
@@ -59,6 +55,7 @@ class Parser():
                               vertex[1] + pivotPoint[1],
                               vertex[2] + pivotPoint[2]])
 
+        # Parses the Faces
         for elm in self.root.findall(".//Face"):
             atb = elm.attrib.get("vertices")
             face : list = atb.split()
@@ -66,6 +63,7 @@ class Parser():
             self.fc.append([face[0], face[1], face[2]])
 
 
+        # Parses the rotation Data of the Mesh
         for elm in self.root.findall("./Mesh"):
             atbrot = elm.attrib.get("rot")
             new_atbrot = str(atbrot)[1:-1]
@@ -73,6 +71,7 @@ class Parser():
             atribute = [float(i) for i in atribute]
             self.meshrot.append(Vector3(atribute[0], atribute[1], atribute[2]))
 
+        # Parses the Marker information
         for elm in self.root.findall("./Marker"):
             # 1. Extract pivot point and pivot orientation
             # 2. Create a mesh object and initialize it with the pivots, vertices, face
@@ -96,7 +95,7 @@ class Parser():
         self.createTrimeshScene(self.vrtx, self.fc, self.markers)
 
     
-
+    # Creating a TriMesh scene
     def createTrimeshScene(self, vectorvertex, vectorfaces, markers):
         # TODO add markers to the scene.metadata collection
         self.arucoMarker = 1, "exampleLabel", Vector3(1, 1, 1), Vector3(0.0, 0.0, 0.0)
@@ -109,6 +108,7 @@ class Parser():
             self.__trimeshGeo.metadata['markers'] = markers
         #self.startSceneProcessor(sceneGeo)
 
+    # Initialising the ScneProcessor
     def startSceneProcessor(self, geometry):
         self.sceneProcessor = SceneProcessor(geometry)
         

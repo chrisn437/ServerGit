@@ -18,6 +18,7 @@ import os
 
 import src.Structs.VoxelPoint as vp
 
+# With this function you will be able to actual see the scene / geometry of it. I.e we used it for visualizing the bounding box
 def show(mesh1, mesh2=None, colors=(1, 0.7, 0.4, 0.3)):
     scene = trimesh.scene.Scene()
     scene.add_geometry(mesh1)
@@ -32,17 +33,19 @@ class SceneProcessor():
     def __init__(self, trimeshgeometr:trimesh.Trimesh =None):
         self.tmg : trimesh.Trimesh = trimeshgeometr
         if self.tmg is None:
+            # For test purposes, if we didn't want to load the actual environment in yet, we used an other room object to see if our implementation works
             fp = os.path.join(os.getcwd(), "permRes", "Room2.obj")
             self.tmg = trimesh.load(fp)
 
 
-
+        # Here we can configure the granularity / size of the Voxel grid
         self.voxelSize  : float= 0.35
 
         # Get the bounding box of the geometry and generate a filled voxel grid out of it
         self.bb = self.tmg.bounding_box
         self.voxelGrid : VoxelGrid = trimesh.voxel.creation.voxelize(self.bb, self.voxelSize)
 
+        # Here the Bounding box gets filled with the voxels
         self.voxelGrid = self.voxelGrid.fill()
         print(self.voxelGrid.bounds)
 
@@ -59,17 +62,10 @@ class SceneProcessor():
         index = np.where(np.all(self.voxelGrid.sparse_indices == indices, axis=1))
         listenerVoxel = self.voxelGrid.points[index[0]]
 
+        # The getNeighbors function gets initialized
         self.pointsWithNeighbours = self.getNeighbours(self.voxelGrid)
-        #self.dopathfinding = Pathfinder(self.pointsWithNeighbours, start=None, end=None)
 
 
-        # 1. TODO discretize the mesh
-        # visualize the trimesh data
-
-        # 2. TODO open an OSC connection and listeng for incoming messages
-        # 3. TODO Calculated the shortest path using the discretized mesh and continuous position updates from the client
-        # 4. TODO output the direction of navigation
-        # P.s. step 3 and 4 are continuously looping
 
     def getMarkers(self):
         return self.tmg.metadata['markers']
@@ -77,15 +73,20 @@ class SceneProcessor():
     def getGrid(self):
         return self.pointsWithNeighbours
 
+    # Here we create the list of every possible voxel grid point we can go to and the corresponding neighbors we can go from that point
+    # This is important for the Pathfinding
     def getNeighbours(self, vg : VoxelGrid):
         voxelSize = vg.shape
+        # Here a list of Voxel points gets created. This hase information about every voxel point and their adjacent voxel points, that is for the pathfinding needed
         output : list[vp.VoxelPoint] = []
 
         for h in range(voxelSize[0]):
             for w in range(voxelSize[1]):
                 for d in range(voxelSize[2]):
+                    # getNeighbor function gets initialized
                     entry = self.getNeighbour(vg, np.array([h, w, d]), voxelSize)
                     output.append(entry)
+        # The testVoxelPoints function gets called
         self.testVoxelPoints(vg, output)
         return output
 
@@ -263,13 +264,3 @@ class SceneProcessor():
                 vertices.clear()
                 faces.clear()
                 faceCounter = 0
-
-            
-
-            
-            
-            
-                
-            
-
-    

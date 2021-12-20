@@ -54,7 +54,7 @@ class OscNetwork():
         server.serve_forever()
 
 
-
+    # Starts listnening and takes in the destinations and start position
     def start_listening(self, addr, startPos, *destinatons):
         print(addr)
         startPos = startPos.strip('(').strip(')')
@@ -67,7 +67,7 @@ class OscNetwork():
         startingPos = startPos
 
         destinatons = [int(i) for i in destinatons]
-
+        # enables we can calculate more than just one route
         routes = []
         grid = self.sceneProcessor.getGrid()
         markers = self.sceneProcessor.getMarkers()
@@ -128,10 +128,12 @@ class OscNetwork():
         print(output)
         self.client.send_message("/destinations", output)
 
+    # Stops listening, so we can switch it on and off
     def stopListening(self, addr):
         print(addr)
         self.listenToPositionUpdates = False
 
+    # Creates and safes a file of the position updates
     def posListener(self, addr, *args):
 
         if self.listenToPositionUpdates == True:
@@ -146,5 +148,3 @@ class OscNetwork():
                 fh.write(f"{time} {args} \n\r")
                 fh.flush()
                 fh.close()
-
-

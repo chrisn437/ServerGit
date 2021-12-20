@@ -8,6 +8,7 @@ import argparse
 
 savedscene = SAVED_SCENE
 
+# For test purposes we used this class to load a room object, so we didn't need to get an actual generated scene file in
 class TcpNetwork():
     def __init__(self):
         print("Opening a TCP socket")
@@ -17,6 +18,7 @@ class TcpNetwork():
     def initSceneParser(self):
         parser = Parser(savedscene)
 
+# Here the TCP network / the server part of it gets created
 class Server():
     def __init__(self, ipAddress="192.168.1.214", port=8050):
         """ Single threaded server application
@@ -44,9 +46,9 @@ class Server():
         # Callback function executed when the program finishes
         atexit.register(self.cleanup)
 
+    # Used to close the connection
     def cleanup(self):
         print("Cleaning up resources..")
-        #cv2.destroyAllWindows()
         self.TCPServerSocket.close()
 
     def listen(self):
@@ -54,8 +56,9 @@ class Server():
         print("Listening for incoming traffic..")
         self.TCPServerSocket.listen(1)
 
-        #Create file and write stuff in it
+        #Create file and write information in it
         path = "res"
+        # implementing time, so we didn't have to rename the filename after every testrun. Because if we forget it, the file could get overwritten
         time = str(datetime.datetime.now().strftime("%H%M%S"))
         fileName = "savedFile_" + time + ".txt"
         outputpath = os.path.join(os.getcwd(), path, fileName)
@@ -73,21 +76,16 @@ class Server():
 
                 # Process the data
                 amount_received = amount_received + data
+                # calling saved file function to create a file and save it
                 self.saveFile(data, outputpath)
 
                 if data:
                     print(f"Received {data}")
-                    # TODO Initialize the parser here
 
                 else:
-                    # TODO pass the file to the parser here
                     Parser(outputpath)
                     print(f"No more data")
                     break
-
-    #def decodeData(self, databin):
-        #gray = cv2.cvtColor(databin, cv2.COLOR_GRAY2BGR)
-        #cv2.imshow('frame', gray)
 
 
     def saveFile(self, data, outputpath):
