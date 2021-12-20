@@ -8,15 +8,6 @@ import argparse
 
 savedscene = SAVED_SCENE
 
-class TcpNetwork():
-    def __init__(self):
-        print("Opening a TCP socket")
-        self.savedScene = savedscene
-        self.initSceneParser()
-
-    def initSceneParser(self):
-        parser = Parser(savedscene)
-
 class Server():
     def __init__(self, ipAddress="192.168.1.214", port=8050):
         """ Single threaded server application
@@ -46,7 +37,6 @@ class Server():
 
     def cleanup(self):
         print("Cleaning up resources..")
-        #cv2.destroyAllWindows()
         self.TCPServerSocket.close()
 
     def listen(self):
@@ -77,17 +67,11 @@ class Server():
 
                 if data:
                     print(f"Received {data}")
-                    # TODO Initialize the parser here
-
                 else:
-                    # TODO pass the file to the parser here
                     Parser(outputpath)
                     print(f"No more data")
                     break
 
-    #def decodeData(self, databin):
-        #gray = cv2.cvtColor(databin, cv2.COLOR_GRAY2BGR)
-        #cv2.imshow('frame', gray)
 
 
     def saveFile(self, data, outputpath):
@@ -96,11 +80,7 @@ class Server():
         Args:
             data ([type]): [description]
             path ([type]): Path relative from the main entry point to a file in res directory
-        
-
         """
-
-        # For inspiration..
         # 1. Decode the data bytes to a string
         dec = data.decode()
 

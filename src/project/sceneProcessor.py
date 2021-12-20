@@ -2,18 +2,11 @@ import trimesh.viewer
 import trimesh.scene
 import trimesh
 import trimesh.voxel
-from trimesh.voxel.encoding import BinaryRunLengthEncoding, Encoding
-import trimesh.voxel.morphology as morphology
 from trimesh.voxel.base import VoxelGrid
 import trimesh.voxel.creation
 import trimesh.primitives
-from trimesh.exchange.binvox import voxelize_mesh
-from src.Structs.Mesh import Mesh
 
-from src.project.pathfinder import Pathfinder
-from mpl_toolkits.mplot3d import Axes3D, art3d
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 
 import src.Structs.VoxelPoint as vp

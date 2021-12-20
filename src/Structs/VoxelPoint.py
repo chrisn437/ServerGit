@@ -27,8 +27,3 @@ class VoxelPoint():
     """NP array containing neighbours in a 3D indice format 
     """
     Neighbours : np.ndarray = None
-
-    def visualize(self):
-        origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
-
-        trimesh.primitives.Box()
