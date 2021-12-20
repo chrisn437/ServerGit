@@ -97,7 +97,7 @@ class SceneProcessor():
         gridSize = voxelGrid.shape
 
         neighbours = []
-        # Brute-force for all neighbours, subtract -1 from gridsize to get 0-indexed gridSized
+        # Brute-force for all neighbours, subtract -1 from gridsize to get 0-indexed gridSized. This works if we have a rectangular bounding box
         #height, width, depth individually
         if h > 0:
             neighbours.append((h - 1, w, d)) 
